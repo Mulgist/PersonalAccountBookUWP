@@ -9,40 +9,40 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="400" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <ComboBox Grid.Column="0" Name="AccountChooseBox" Header="계좌 선택" PlaceholderText="계좌를 선택하세요." Margin="10,10,10,10" Width="380"/>
-            <TextBlock Grid.Column="1" Name="BeforeBalanceTextBlock" Text="계산 전 잔액이 표시됩니다." Margin="20,45,10,10"/>
-        </Grid>
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120" />
-                <ColumnDefinition Width="120" />
-                <ColumnDefinition Width="250" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <ComboBox Grid.Column="0" Name="IncOrDecComboBox" Header="금액 증감" PlaceholderText="+ 또는 -" Margin="10,10,10,10" Width="100"/>
-            <ComboBox Grid.Column="1" Name="CurrencyComboBox" Header="통화" PlaceholderText="\ 등" Margin="10,10,10,10" Width="100"/>
-            <TextBox Grid.Column="2" Name="AmountTextBox" Header="거래 금액" PlaceholderText="금액을 입력하세요. (숫자만)" Margin="10,10,10,10" IsSpellCheckEnabled="True"/>
-            <TextBlock Grid.Column="3" Name="AfterBalanceTextBlock" Text="계산 후 잔액이 표시됩니다." Margin="20,45,10,10"/>
-        </Grid>
-        <ComboBox Grid.Row="2" Name="TransactionTypeComboBox" Header="거래 유형" PlaceholderText="거래 유형을 선택하세요." Margin="10,10,10,10" Width="210"/>
-        <TextBox Grid.Row="3" Name="BankBookTextBox" Header="거래 대상" PlaceholderText="통장내역에 있는 거래 대상을 입력하세요." Margin="10,10,10,10" IsSpellCheckEnabled="True" Width="400" HorizontalAlignment="Left"/>
-        <TextBox Grid.Row="4" Name="CardBookTextBox" Header="자세한 거래 대상" PlaceholderText="(옵션) 카드내역에 있는 거래 대상을 입력하세요." Margin="10,10,10,10" IsSpellCheckEnabled="True" Width="400" HorizontalAlignment="Left"/>
-        <TextBox Grid.Row="5" Name="ContentTextBox" Header="내용" PlaceholderText="(옵션)카드내역에 있는 거래 대상을 입력하세요" Margin="10,10,10,10" TextWrapping="Wrap"
+        
+        <ScrollViewer Grid.Row="0" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="250" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Grid.Column="0" Name="AccountChooseBox" Header="계좌 선택" PlaceholderText="계좌 선택" Margin="10,10,10,10" Width="230"/>
+                    <TextBlock Grid.Column="1" Name="BeforeBalanceTextBlock" Text="계산 전 잔액" Margin="10,45,10,10"/>
+                </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="90" />
+                        <ColumnDefinition Width="90" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Grid.Column="0" Name="IncOrDecComboBox" Header="증감" Margin="10,10,10,10" Width="60"/>
+                    <ComboBox Grid.Column="1" Name="CurrencyComboBox" Header="통화" Margin="10,10,10,10" Width="60"/>
+                    <TextBox Grid.Column="2" Name="AmountTextBox" Header="거래 금액" PlaceholderText="금액 입력 (숫자만)" Margin="10,10,10,10" IsSpellCheckEnabled="True"/>
+                </Grid>
+                <TextBlock Name="AfterBalanceTextBlock" Text="계산 후 잔액" Margin="20,10,10,20"/>
+                <ComboBox Name="TransactionTypeComboBox" Header="거래 유형" PlaceholderText="거래 유형 선택" Margin="10,10,10,10" Width="210"/>
+                <TextBox Name="BankBookTextBox" Header="거래 대상" PlaceholderText="통장내역에 있는 거래 대상 입력" Margin="10,10,10,10" IsSpellCheckEnabled="True" Width="350" HorizontalAlignment="Left"/>
+                <TextBox Name="CardBookTextBox" Header="자세한 거래 대상" PlaceholderText="(옵션) 카드내역에 있는 거래 대상 입력" Margin="10,10,10,10" IsSpellCheckEnabled="True" Width="350" HorizontalAlignment="Left"/>
+                <TextBox Name="ContentTextBox" Header="세부 내용" PlaceholderText="" Margin="10,10,10,10" TextWrapping="Wrap"
                  IsSpellCheckEnabled="True" HorizontalAlignment="Stretch" IsTextPredictionEnabled="True" AcceptsReturn="True"/>
-        <CommandBar Grid.Row="6">
+            </StackPanel>
+        </ScrollViewer>
+        
+        <CommandBar Grid.Row="1">
             <AppBarButton Name="EraseButton"  Label="지우기" Click="EraseButton_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEF17;"/>
