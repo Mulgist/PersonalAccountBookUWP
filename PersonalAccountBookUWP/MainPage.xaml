@@ -8,6 +8,157 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Background="#FFF2F2F2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="48" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="HambergerButton"
+                    Grid.Column="0"
+                    FontFamily="Segoe MDL2 Assets" 
+                    Content="&#xE700;" 
+                    FontWeight="Bold"
+                    Width="48px" 
+                    Height="48px" 
+                    Foreground="White"
+                    Background="Green" 
+                    Click="HambergerButton_Click" />
+            <Border  BorderBrush="{x:Null}"
+                     Grid.Column="1"
+                     Height="48px" 
+                     HorizontalAlignment="Left">
+                <TextBlock Name="Title"
+                           TextWrapping="Wrap"
+                           FontSize="24" 
+                           Text="홈"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left" 
+                           Margin="24,0,0,0" />
+            </Border>
+        </Grid>
+        <SplitView Name="MainSplitView" Grid.Row="1" DisplayMode="CompactOverlay" IsPaneOpen="False">
+            <SplitView.Pane>
+                <Grid>
+                    <StackPanel Background="#CC000000">
+                        <ListBox Name="IconsListBox"
+                                 SelectionMode="Single"
+                                 SelectionChanged="HambergerListBox_SelectionChanged"
+                                 Background="Transparent">
+                            <ListBoxItem Name="HomeListBoxItem" Height="48px">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE10F;" Foreground="White" />
+                                    <TextBlock Text="홈" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                </StackPanel>
+                            </ListBoxItem>
 
+                            <ListBoxItem Name="NoticeListBoxItem" Height="48px">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE129;" Foreground="White" />
+                                    <TextBlock Text="메뉴1" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                </StackPanel>
+                            </ListBoxItem>
+
+                            <ListBoxItem Name="PlanListBoxItem" Height="48px">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xED28;" Foreground="White"/>
+                                    <TextBlock Text="메뉴2" FontSize="20" Margin="20,0,0,0" Foreground="White"/>
+                                </StackPanel>
+                            </ListBoxItem>
+
+                            <ListBoxItem Name="SeminarListBoxItem" Height="48px">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE836;" Foreground="White" />
+                                    <TextBlock Text="메뉴3" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                </StackPanel>
+                            </ListBoxItem>
+
+                            <ListBoxItem Name="PlayListBoxItem" Height="48px">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE8FA;" Foreground="White" />
+                                    <TextBlock Text="메뉴4" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                </StackPanel>
+                            </ListBoxItem>
+
+                            <ListBoxItem Name="WorkshopListBoxItem" Height="48px">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE8E0;" Foreground="White" />
+                                    <TextBlock Text="메뉴5" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                </StackPanel>
+                            </ListBoxItem>
+
+                            <ListBoxItem Name="StudyListBoxItem" Height="48px">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE1C2;" Foreground="White" />
+                                    <TextBlock Text="메뉴6" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                </StackPanel>
+                            </ListBoxItem>
+
+                            <ListBoxItem Name="StudentListBoxItem" Height="48px">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontSize="20" Text="在" Foreground="White" />
+                                    <TextBlock Text="메뉴7" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                </StackPanel>
+                            </ListBoxItem>
+
+                            <ListBoxItem Name="GraduateListBoxItem" Height="48px">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontSize="20" Text="卒" Foreground="White" />
+                                    <TextBlock Text="메뉴8" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                </StackPanel>
+                            </ListBoxItem>
+                        </ListBox>
+                    </StackPanel>
+                    <StackPanel VerticalAlignment="Bottom">
+                        <Grid Height="48px">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Border BorderBrush="{x:Null}" 
+                                    Height="48px" 
+                                    Width="48px">
+                                <TextBlock TextWrapping="Wrap"
+                                           FontFamily="Segoe MDL2 Assets" 
+                                           FontSize="24" 
+                                           Text="&#xE0AB;"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           Foreground="White" />
+                            </Border>
+                            <Button Grid.Column="3" 
+                                    FontFamily="Segoe MDL2 Assets" 
+                                    FontSize="24" 
+                                    Content="&#xE779;" 
+                                    Background="Transparent" 
+                                    Height="48px"
+                                    Width="48px"
+                                    Foreground="White"
+                                    Click="AccountButton_Click"
+                                    ToolTipService.ToolTip="계정"/>
+                            <Button Grid.Column="4" 
+                                    FontFamily="Segoe MDL2 Assets" 
+                                    FontSize="24" 
+                                    Content="&#xE713;" 
+                                    Background="Transparent" 
+                                    Height="48px"
+                                    Width="48px"
+                                    Foreground="White"
+                                    Click="SettingButton_Click"
+                                    ToolTipService.ToolTip="설정"/>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </SplitView.Pane>
+            <SplitView.Content>
+                <Frame Name="MainSplitViewContent" />
+            </SplitView.Content>
+        </SplitView>
     </Grid>
 </Page>
