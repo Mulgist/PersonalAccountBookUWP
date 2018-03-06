@@ -14,31 +14,70 @@
         </Grid.RowDefinitions>
         
         <ScrollViewer Grid.Row="0" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
-            <StackPanel>
+            <StackPanel Name="UIStackPanel">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="250" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="50*" />
+                        <ColumnDefinition Width="50*" />
                     </Grid.ColumnDefinitions>
-                    <ComboBox Grid.Column="0" Name="AccountChooseBox" Header="계좌 선택" PlaceholderText="계좌 선택" Margin="10,10,10,10" Width="230"/>
+                    <ComboBox Grid.Column="0" Name="AccountChooseBox" Header="계좌 선택" PlaceholderText="계좌 선택" Margin="10,10,10,10" HorizontalAlignment="Stretch"/>
                     <TextBlock Grid.Column="1" Name="BeforeBalanceTextBlock" Text="계산 전 잔액" Margin="10,45,10,10"/>
                 </Grid>
+                
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="90" />
-                        <ColumnDefinition Width="90" />
+                        <ColumnDefinition Width="20*" />
+                        <ColumnDefinition Width="20*" />
+                        <ColumnDefinition Width="50*" />
+                        <ColumnDefinition Width="10*" />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Grid.Column="0" Name="IncOrDecComboBox" Header="증감" Margin="10,10,10,10" HorizontalAlignment="Stretch" />
+                    <ComboBox Grid.Column="1" Name="CurrencyComboBox" Header="통화" Margin="10,10,10,10" HorizontalAlignment="Stretch" />
+                    <TextBox Grid.Column="2" Name="AmountTextBox" Header="거래 금액" PlaceholderText="금액 입력 (숫자만)" Margin="10,10,10,10" HorizontalAlignment="Stretch"/>
+                </Grid>
+                
+                <TextBlock Name="AfterBalanceTextBlock" Text="계산 후 잔액" Margin="20,10,10,20"/>
+                
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50*" />
+                        <ColumnDefinition Width="50*" />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Name="TransactionTypeComboBox" Header="거래 유형" PlaceholderText="거래 유형 선택" Margin="10,10,10,10" HorizontalAlignment="Stretch"/>
+                </Grid>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="70*" />
+                        <ColumnDefinition Width="30*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Row="0" Grid.Column="0" Name="BankBookTextBox" Header="거래 대상" PlaceholderText="통장내역에 있는 거래 대상 입력" Margin="10,10,10,10" IsSpellCheckEnabled="True" HorizontalAlignment="Stretch"/>
+                    <TextBox Grid.Row="1" Grid.Column="0" Name="CardBookTextBox" Header="자세한 거래 대상" PlaceholderText="(옵션) 카드내역에 있는 거래 대상 입력" Margin="10,10,10,10" IsSpellCheckEnabled="True" HorizontalAlignment="Stretch"/>
+                </Grid>
+
+                <Button Name="ReceiptImageButton" Margin="10, 10, 10, 10" Width="100" Height="150" Click="ReceiptImageButton_ClickAsync" Padding="0, 0, 0, 0" Background="White">
+                    <Button.Content>
+                        <Image Name="ReceiptImage" Source="ms-appx:///Assets/AddImage.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    </Button.Content>
+                </Button>
+                <Grid Margin="10,10,10,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="20" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <ComboBox Grid.Column="0" Name="IncOrDecComboBox" Header="증감" Margin="10,10,10,10" Width="60"/>
-                    <ComboBox Grid.Column="1" Name="CurrencyComboBox" Header="통화" Margin="10,10,10,10" Width="60"/>
-                    <TextBox Grid.Column="2" Name="AmountTextBox" Header="거래 금액" PlaceholderText="금액 입력 (숫자만)" Margin="10,10,10,10" IsSpellCheckEnabled="True"/>
+                    <TextBlock Grid.Column="0" Text="세부 내역" VerticalAlignment="Center" />
+                    <Button Grid.Column="2" Name="AddDetailButton" Content="추가" Click="AddDetailButton_Click"/>
+                    <TextBlock Grid.Column="4" Text="합계" VerticalAlignment="Center" />
                 </Grid>
-                <TextBlock Name="AfterBalanceTextBlock" Text="계산 후 잔액" Margin="20,10,10,20"/>
-                <ComboBox Name="TransactionTypeComboBox" Header="거래 유형" PlaceholderText="거래 유형 선택" Margin="10,10,10,10" Width="210"/>
-                <TextBox Name="BankBookTextBox" Header="거래 대상" PlaceholderText="통장내역에 있는 거래 대상 입력" Margin="10,10,10,10" IsSpellCheckEnabled="True" Width="350" HorizontalAlignment="Left"/>
-                <TextBox Name="CardBookTextBox" Header="자세한 거래 대상" PlaceholderText="(옵션) 카드내역에 있는 거래 대상 입력" Margin="10,10,10,10" IsSpellCheckEnabled="True" Width="350" HorizontalAlignment="Left"/>
-                <TextBox Name="ContentTextBox" Header="세부 내용" PlaceholderText="" Margin="10,10,10,10" TextWrapping="Wrap"
-                 IsSpellCheckEnabled="True" HorizontalAlignment="Stretch" IsTextPredictionEnabled="True" AcceptsReturn="True"/>
             </StackPanel>
         </ScrollViewer>
         
