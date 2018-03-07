@@ -2,7 +2,6 @@
     x:Class="PersonalAccountBookUWP.Controller.AddPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:PersonalAccountBookUWP.Controller"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -20,30 +19,59 @@
                         <ColumnDefinition Width="50*" />
                         <ColumnDefinition Width="50*" />
                     </Grid.ColumnDefinitions>
-                    <ComboBox Grid.Column="0" Name="AccountChooseBox" Header="계좌 선택" PlaceholderText="계좌 선택" Margin="10,10,10,10" HorizontalAlignment="Stretch"/>
-                    <TextBlock Grid.Column="1" Name="BeforeBalanceTextBlock" Text="계산 전 잔액" Margin="10,45,10,10"/>
+                    <ComboBox
+                        Grid.Column="0"
+                        Name="AccountChooseBox"
+                        Header="계좌 선택"
+                        PlaceholderText="계좌 선택"
+                        Margin="10,10,10,10"
+                        HorizontalAlignment="Stretch"/>
+                    <TextBlock Grid.Column="1"
+                               Name="BeforeBalanceTextBlock"
+                               Text="계산 전 잔액"
+                               Margin="10,45,10,10"/>
                 </Grid>
                 
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="20*" />
-                        <ColumnDefinition Width="20*" />
-                        <ColumnDefinition Width="50*" />
-                        <ColumnDefinition Width="10*" />
+                        <ColumnDefinition Width="25*" />
+                        <ColumnDefinition Width="25*" />
+                        <ColumnDefinition Width="45*" />
+                        <ColumnDefinition Width="5*" />
                     </Grid.ColumnDefinitions>
-                    <ComboBox Grid.Column="0" Name="IncOrDecComboBox" Header="증감" Margin="10,10,10,10" HorizontalAlignment="Stretch" />
-                    <ComboBox Grid.Column="1" Name="CurrencyComboBox" Header="통화" Margin="10,10,10,10" HorizontalAlignment="Stretch" />
-                    <TextBox Grid.Column="2" Name="AmountTextBox" Header="거래 금액" PlaceholderText="금액 입력 (숫자만)" Margin="10,10,10,10" HorizontalAlignment="Stretch"/>
+                    <ComboBox Grid.Column="0"
+                              Name="IncOrDecComboBox"
+                              Header="증감"
+                              Margin="10,10,10,10"
+                              HorizontalAlignment="Stretch"
+                              SelectionChanged="IncOrDecComboBox_SelectionChanged" />
+                    <ComboBox Grid.Column="1"
+                              Name="CurrencyComboBox"
+                              Header="통화"
+                              Margin="10,10,10,10"
+                              HorizontalAlignment="Stretch" />
+                    <TextBox Grid.Column="2"
+                             Name="AmountTextBox"
+                             Header="거래 금액"
+                             PlaceholderText="금액 입력 (숫자만)"
+                             Margin="10,10,10,10"
+                             HorizontalAlignment="Stretch"/>
                 </Grid>
                 
-                <TextBlock Name="AfterBalanceTextBlock" Text="계산 후 잔액" Margin="20,10,10,20"/>
+                <TextBlock Name="AfterBalanceTextBlock"
+                           Text="계산 후 잔액"
+                           Margin="20,10,10,20"/>
                 
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50*" />
                         <ColumnDefinition Width="50*" />
                     </Grid.ColumnDefinitions>
-                    <ComboBox Name="TransactionTypeComboBox" Header="거래 유형" PlaceholderText="거래 유형 선택" Margin="10,10,10,10" HorizontalAlignment="Stretch"/>
+                    <ComboBox Name="TransactionTypeComboBox"
+                              Header="거래 유형"
+                              PlaceholderText="거래 유형 선택"
+                              Margin="10,10,10,10"
+                              HorizontalAlignment="Stretch"/>
                 </Grid>
 
                 <Grid>
@@ -52,16 +80,46 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="70*" />
-                        <ColumnDefinition Width="30*" />
+                        <ColumnDefinition Width="80*" />
+                        <ColumnDefinition Width="20*" />
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Row="0" Grid.Column="0" Name="BankBookTextBox" Header="거래 대상" PlaceholderText="통장내역에 있는 거래 대상 입력" Margin="10,10,10,10" IsSpellCheckEnabled="True" HorizontalAlignment="Stretch"/>
-                    <TextBox Grid.Row="1" Grid.Column="0" Name="CardBookTextBox" Header="자세한 거래 대상" PlaceholderText="(옵션) 카드내역에 있는 거래 대상 입력" Margin="10,10,10,10" IsSpellCheckEnabled="True" HorizontalAlignment="Stretch"/>
+                    <!--TextBox Grid.Row="0" Grid.Column="0" Name="BankBookTextBox" Header="거래 대상" PlaceholderText="통장내역에 있는 거래 대상 입력" Margin="10,10,10,10" IsSpellCheckEnabled="True" HorizontalAlignment="Stretch"/-->
+                    <AutoSuggestBox Grid.Row="0"
+                                    Grid.Column="0"
+                                    Name="BankBookSuggestBox"
+                                    Header="거래 대상"
+                                    PlaceholderText="통장내역에 있는 거래 대상 입력"
+                                    Margin="10,10,10,10"
+                                    QueryIcon="Find"
+                                    TextChanged="BankBookSuggestBox_TextChanged"
+                                    QuerySubmitted="BankBookSuggestBox_QuerySubmitted"
+                                    SuggestionChosen="BankBookSuggestBox_SuggestionChosen"
+                                    HorizontalAlignment="Stretch"/>
+                    <!-- " TextBox Grid.Row="1" Grid.Column="0" Name="CardBookTextBox" Header="자세한 거래 대상" PlaceholderText="(옵션) 카드내역에 있는 거래 대상 입력" Margin="10,10,10,10" IsSpellCheckEnabled="True" HorizontalAlignment="Stretch"/-->
+                    <AutoSuggestBox Grid.Row="1"
+                                    Grid.Column="0"
+                                    Name="CardBookSuggestBox"
+                                    Header="자세한 거래 대상"
+                                    PlaceholderText="(옵션) 카드내역에 있는 거래 대상 입력"
+                                    Margin="10,10,10,10"
+                                    QueryIcon="Find"
+                                    TextChanged="CardBookSuggestBox_TextChanged"
+                                    QuerySubmitted="CardBookSuggestBox_QuerySubmitted"
+                                    SuggestionChosen="CardBookSuggestBox_SuggestionChosen"
+                                    HorizontalAlignment="Stretch"/>
                 </Grid>
 
-                <Button Name="ReceiptImageButton" Margin="10, 10, 10, 10" Width="100" Height="150" Click="ReceiptImageButton_ClickAsync" Padding="0, 0, 0, 0" Background="White">
+                <Button Name="ReceiptImageButton"
+                        Margin="10, 10, 10, 10"
+                        Width="100" Height="150"
+                        Click="ReceiptImageButton_ClickAsync"
+                        Padding="0, 0, 0, 0"
+                        Background="White">
                     <Button.Content>
-                        <Image Name="ReceiptImage" Source="ms-appx:///Assets/AddImage.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                        <Image Name="ReceiptImage"
+                               Source="ms-appx:///Assets/AddImage.png"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch"/>
                     </Button.Content>
                 </Button>
                 <Grid Margin="10,10,10,10">
@@ -74,22 +132,35 @@
                         <ColumnDefinition Width="20" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="세부 내역" VerticalAlignment="Center" />
-                    <Button Grid.Column="2" Name="AddDetailButton" Content="추가" Click="AddDetailButton_Click"/>
-                    <TextBlock Grid.Column="4" Text="합계" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="0"
+                               Text="세부 내역"
+                               VerticalAlignment="Center" />
+                    <Button Grid.Column="2"
+                            Name="AddDetailButton"
+                            Content="추가"
+                            Click="AddDetailButton_Click"/>
+                    <TextBlock Grid.Column="4"
+                               Text="합계"
+                               VerticalAlignment="Center" />
                 </Grid>
             </StackPanel>
         </ScrollViewer>
         
         <CommandBar Grid.Row="1">
-            <AppBarButton Name="EraseButton"  Label="지우기" Click="EraseButton_Click">
+            <AppBarButton Name="EraseButton"
+                          Label="지우기"
+                          Click="EraseButton_Click">
                 <AppBarButton.Icon>
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEF17;"/>
+                    <FontIcon FontFamily="Segoe MDL2 Assets"
+                              Glyph="&#xEF17;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton Name="SaveButton" Label="저장" Click="SaveButton_Click">
+            <AppBarButton Name="SaveButton"
+                          Label="저장"
+                          Click="SaveButton_Click">
                 <AppBarButton.Icon>
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE105;" />
+                    <FontIcon FontFamily="Segoe MDL2 Assets"
+                              Glyph="&#xE105;" />
                 </AppBarButton.Icon>
             </AppBarButton>
         </CommandBar>

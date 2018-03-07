@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using PersonalAccountBookUWP.Controller;
+using Windows.UI.Popups;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x412에 나와 있습니다.
 
@@ -194,9 +195,8 @@ namespace PersonalAccountBookUWP
 
         private async void MessageBoxOpen(string showString)
         {
-            /*
             var dialog = new MessageDialog(showString);
-            await dialog.ShowAsync(); */
+            await dialog.ShowAsync();
         }
     }
 }
