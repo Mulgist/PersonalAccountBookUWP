@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Windows.UI.Xaml;
@@ -19,48 +18,31 @@ namespace PersonalAccountBookUWP.Controller
         private List<Grid> detailGridArray = new List<Grid>();
         private StorageFile file;
 
-        // DB에 요청할 때 필요한 것들
-        private HttpClient restful = new HttpClient();
-        private HttpRequestMessage request;
-        private HttpResponseMessage response;
+        // DB에 요청, 응답받을 때 필요한 것들
+        private JArray objects;
+
+        // 이 페이지에 필요한 리스트. 이 클래스 전역에서 필요함
+        private List<Account> accountList = new List<Account>();
+        private List<TransactionType> transactionTypelist = new List<TransactionType>();
 
         public AddPage()
         {
             this.InitializeComponent();
 
             // ComboBox의 항목 추가
-            var accountList = new List<Account>();
             var accountStringList = new List<string>();
             var incOrDecList = new List<string>();
             var currencyList = new List<string>();
-            var transactionTypelist = new List<string>();
+            var transactionTypeStringlist = new List<string>();
 
-            request = new HttpRequestMessage(HttpMethod.Get, App.RestfulUrl + "?method=" + (string)App.MethodElement.Element("getAccounts"));
-            response = new HttpResponseMessage();
-            try
-            {
-                // 이 한줄로 DB에 요청한 다음 응답을 받는다. 실패하면 catch문으로 이동
-                response = Task.Run(async () => { return await restful.SendAsync(request); }).Result;
-            }
-            catch (Exception e)
-            {
-                if (e.Source != null)
-                {
-                    Debug.WriteLine("source: {0}", e.Source);
-                }
-                throw;
-            }
+            objects = DataService.instance.GetJsonArrayFromDB("getAccounts");
 
-            // 응답을 json화를 시킨다.
-            var json = response.Content.ReadAsStringAsync().Result;
-            var objects = JArray.Parse(json);
-            
             // json이 파싱된 객체인 objets를 분해하여 데이터를 알맞게 리스트에 넣는다.
-            foreach (JObject obj in objects)
+            foreach (JObject element in objects)
             {
-                accountList.Add(new Account(obj["id"].ToObject<int>(), obj["bank"].ToString(), obj["name"].ToString(), obj["number"].ToString(), obj["balance"].ToObject<int>()));
+                accountList.Add(new Account(element["id"].ToObject<int>(), element["bank"].ToString(), element["name"].ToString(), element["number"].ToString(), element["balance"].ToObject<int>()));
             }
-            
+
             // 계좌목록 Combobox에 표시할 string을 구성해 새 리스트에 넣고 있다.
             foreach (var account in accountList)
             {
@@ -78,6 +60,8 @@ namespace PersonalAccountBookUWP.Controller
             // Default Selection
             IncOrDecComboBox.SelectedIndex = 0;
 
+            // -------------------------------------------------------------------------
+
             currencyList.Add("\\");
             currencyList.Add("$");
             currencyList.Add("€");
@@ -85,33 +69,37 @@ namespace PersonalAccountBookUWP.Controller
             currencyList.Add("¥");
             CurrencyComboBox.ItemsSource = currencyList;
 
-            
+            // -------------------------------------------------------------------------
+
             if (IncOrDecComboBox.SelectedValue.ToString().Equals("+"))
             {
-                transactionTypelist.Add("받음");
+                objects = DataService.instance.GetJsonArrayFromDB("getAddingTypes");
             }
             else if (IncOrDecComboBox.SelectedValue.ToString().Equals("-"))
             {
-                transactionTypelist.Add("구매");
-                transactionTypelist.Add("계좌이체");
-                transactionTypelist.Add("정기이체");
-                transactionTypelist.Add("요금납부");
-                transactionTypelist.Add("교통충전");
+                objects = DataService.instance.GetJsonArrayFromDB("getSubtractingTypes");
             }
-            else
+
+            foreach (JObject element in objects)
             {
-                transactionTypelist.Add("ERROR");
+                transactionTypelist.Add(new TransactionType(element["id"].ToObject<int>(), element["name"].ToString()));
             }
 
+            foreach (var transactionType in transactionTypelist)
+            {
+                transactionTypeStringlist.Add(transactionType.Name);
+            }
+            TransactionTypeComboBox.ItemsSource = transactionTypeStringlist;
 
-            TransactionTypeComboBox.ItemsSource = transactionTypelist;
+            // -------------------------------------------------------------------------
 
             // 상세정보입력 레이아웃 추가
             detailGridArray.Add(NewDetailGrid());
             UIStackPanel.Children.Add(detailGridArray[0]);
+
+            TransactionDatePicker.Date = DateTime.Today;
+            Debug.WriteLine(TransactionDatePicker.Date.ToString());
         }
-
-
 
         private async void ReceiptImageButton_ClickAsync(object sender, RoutedEventArgs e)
         {
@@ -130,10 +118,12 @@ namespace PersonalAccountBookUWP.Controller
             Grid detailGrid = new Grid();
             ColumnDefinition detailColumn = new ColumnDefinition();
             ColumnDefinition costColumn = new ColumnDefinition();
+            ColumnDefinition emptyColumn = new ColumnDefinition();
             TextBox detailTextBox = new TextBox();
             TextBox costTextBox = new TextBox();
-            detailColumn.Width = new GridLength(210);
-            costColumn.Width = new GridLength(150);
+            detailColumn.Width = new GridLength(50, GridUnitType.Star);
+            costColumn.Width = new GridLength(30, GridUnitType.Star);
+            emptyColumn.Width = new GridLength(20, GridUnitType.Star);
             detailTextBox.Margin = new Thickness(10, 10, 10, 10);
             detailTextBox.PlaceholderText = "구체적인 항목 작성";
             detailTextBox.SetValue(Grid.ColumnProperty, 0);
@@ -143,6 +133,7 @@ namespace PersonalAccountBookUWP.Controller
 
             detailGrid.ColumnDefinitions.Add(detailColumn);
             detailGrid.ColumnDefinitions.Add(costColumn);
+            detailGrid.ColumnDefinitions.Add(emptyColumn);
             detailGrid.Children.Add(detailTextBox);
             detailGrid.Children.Add(costTextBox);
 
@@ -261,6 +252,17 @@ namespace PersonalAccountBookUWP.Controller
                 transactionTypelist.Add("ERROR");
             }
             TransactionTypeComboBox.ItemsSource = transactionTypelist;
+        }
+
+        private void TodayCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            TransactionDatePicker.Date = DateTime.Today;
+            TransactionDatePicker.IsEnabled = false;
+        }
+
+        private void TodayCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            TransactionDatePicker.IsEnabled = true;
         }
     }
 }

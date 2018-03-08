@@ -11,9 +11,29 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        
+
         <ScrollViewer Grid.Row="0" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
             <StackPanel Name="UIStackPanel">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60*" />
+                        <ColumnDefinition Width="30*" />
+                        <ColumnDefinition Width="10*" />
+                    </Grid.ColumnDefinitions>
+                    <CalendarDatePicker Grid.Column="0" 
+                                Name="TransactionDatePicker" 
+                                HorizontalAlignment="Stretch"
+                                Header="날짜"
+                                Margin="10,10,10,10" />
+                    <CheckBox Grid.Column="1"
+                              Name="TodayCheckBox"
+                              Content="오늘"
+                              Margin="10,10,10,10"
+                              VerticalAlignment="Bottom"
+                              Checked="TodayCheckBox_Checked"
+                              Unchecked="TodayCheckBox_Unchecked" />
+                </Grid>
+
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50*" />
@@ -31,7 +51,7 @@
                                Text="계산 전 잔액"
                                Margin="10,45,10,10"/>
                 </Grid>
-                
+
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="25*" />
@@ -57,11 +77,11 @@
                              Margin="10,10,10,10"
                              HorizontalAlignment="Stretch"/>
                 </Grid>
-                
+
                 <TextBlock Name="AfterBalanceTextBlock"
                            Text="계산 후 잔액"
                            Margin="20,10,10,20"/>
-                
+
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50*" />
@@ -145,7 +165,7 @@
                 </Grid>
             </StackPanel>
         </ScrollViewer>
-        
+
         <CommandBar Grid.Row="1">
             <AppBarButton Name="EraseButton"
                           Label="지우기"

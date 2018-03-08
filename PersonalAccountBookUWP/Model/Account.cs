@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PersonalAccountBookUWP
+﻿namespace PersonalAccountBookUWP
 {
     class Account
     {
@@ -14,41 +8,11 @@ namespace PersonalAccountBookUWP
         private string number;
         private int balance;
 
-        public int Id
-        {
-            get
-            {
-                return id;
-            }
-        }
-        public string Bank
-        {
-            get
-            {
-                return bank;
-            }
-        }
-        public string Name
-        {
-            get
-            {
-                return name;
-            }
-        }
-        public string Number
-        {
-            get
-            {
-                return number;
-            }
-        }
-        public int Balance
-        {
-            get
-            {
-                return balance;
-            }
-        }
+        public int Id => id;
+        public string Bank => bank;
+        public string Name => name;
+        public string Number => number;
+        public int Balance => balance;
 
         public Account(int id, string bank, string name, string number, int balance)
         {
