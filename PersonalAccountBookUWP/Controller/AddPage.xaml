@@ -59,12 +59,14 @@
                         <ColumnDefinition Width="45*" />
                         <ColumnDefinition Width="5*" />
                     </Grid.ColumnDefinitions>
-                    <ComboBox Grid.Column="0"
-                              Name="IncOrDecComboBox"
-                              Header="증감"
-                              Margin="10,10,10,10"
-                              HorizontalAlignment="Stretch"
-                              SelectionChanged="IncOrDecComboBox_SelectionChanged" />
+                    <ToggleSwitch Grid.Column="0"
+                                  Name="IncOrDecToggleSwitch"
+                                  Header="증감"
+                                  OnContent=" +"
+                                  OffContent=" -"
+                                  HorizontalAlignment="Left"
+                                  Toggled="IncOrDecToggleSwitch_Toggled"
+                                  Margin="10,10,10,10"/>
                     <ComboBox Grid.Column="1"
                               Name="CurrencyComboBox"
                               Header="통화"

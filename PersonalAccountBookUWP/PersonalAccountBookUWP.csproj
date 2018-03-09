@@ -103,6 +103,7 @@
     <Compile Include="Controller\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\DetailHistory.cs" />
     <Compile Include="Model\History.cs" />
     <Compile Include="Model\TransactionType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

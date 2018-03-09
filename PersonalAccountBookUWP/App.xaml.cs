@@ -4,6 +4,7 @@ using System.IO;
 using System.Xml.Linq;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -18,6 +19,9 @@ namespace PersonalAccountBookUWP
         {
             get => restfulUrl;
         }
+
+        // 로컬 앱 세팅 데이터 폴더 검색
+        public static ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
 
         // 나중에 DB에 다방면으로 접근할 때 사용된다.
         private static XElement methodElement;
@@ -38,6 +42,32 @@ namespace PersonalAccountBookUWP
             methodElement = databaseElement.Element("Method");
 
             restfulUrl = (string)databaseElement.Element("URL");
+
+            // 기본 세팅 데이터를 초기화한다 (내부 데이터가 없을때)
+            if (localSettings.Values["date"] == null)
+            {
+                localSettings.Values["date"] = DateTime.Now.Date.ToString();
+            }
+            if (localSettings.Values["inOrDec"] == null)
+            {
+                localSettings.Values["inOrDec"] = true;
+            }
+            if (localSettings.Values["accountIndex"] == null)
+            {
+                localSettings.Values["accountIndex"] = 0;
+            }
+            if (localSettings.Values["currencyIndex"] == null)
+            {
+                localSettings.Values["currencyIndex"] = 0;
+            }
+            if (localSettings.Values["plusTypeIndex"] == null)
+            {
+                localSettings.Values["plusTtypeIndex"] = 0;
+            }
+            if (localSettings.Values["minusTypeIndex"] == null)
+            {
+                localSettings.Values["minusTtypeIndex"] = 0;
+            }
         }
 
         // 최종 사용자가 응용 프로그램을 정상적으로 시작할 때 호출된다. 다른 진입점은 특정 파일을 여는 등 응용 프로그램을 시작할 때

@@ -33,7 +33,8 @@ namespace PersonalAccountBookUWP.Controller
             var accountStringList = new List<string>();
             var incOrDecList = new List<string>();
             var currencyList = new List<string>();
-            var transactionTypeStringlist = new List<string>();
+
+            TransactionDatePicker.Date = Convert.ToDateTime(Convert.ToString(App.localSettings.Values["date"]));
 
             objects = DataService.instance.GetJsonArrayFromDB("getAccounts");
 
@@ -52,13 +53,13 @@ namespace PersonalAccountBookUWP.Controller
             // 만들어진 string 리스트를 ComboBox의 소스로 넣는다.
             AccountChooseBox.ItemsSource = accountStringList;
 
+            // 선택 인덱스 설정값에 따라 선택된다.
+            AccountChooseBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["accountIndex"]);
+
             // -------------------------------------------------------------------------
 
-            incOrDecList.Add("+");
-            incOrDecList.Add("-");
-            IncOrDecComboBox.ItemsSource = incOrDecList;
             // Default Selection
-            IncOrDecComboBox.SelectedIndex = 0;
+            IncOrDecToggleSwitch.IsOn = true;
 
             // -------------------------------------------------------------------------
 
@@ -68,37 +69,17 @@ namespace PersonalAccountBookUWP.Controller
             currencyList.Add("£");
             currencyList.Add("¥");
             CurrencyComboBox.ItemsSource = currencyList;
+            CurrencyComboBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["currencyIndex"]);
 
             // -------------------------------------------------------------------------
 
-            if (IncOrDecComboBox.SelectedValue.ToString().Equals("+"))
-            {
-                objects = DataService.instance.GetJsonArrayFromDB("getAddingTypes");
-            }
-            else if (IncOrDecComboBox.SelectedValue.ToString().Equals("-"))
-            {
-                objects = DataService.instance.GetJsonArrayFromDB("getSubtractingTypes");
-            }
-
-            foreach (JObject element in objects)
-            {
-                transactionTypelist.Add(new TransactionType(element["id"].ToObject<int>(), element["name"].ToString()));
-            }
-
-            foreach (var transactionType in transactionTypelist)
-            {
-                transactionTypeStringlist.Add(transactionType.Name);
-            }
-            TransactionTypeComboBox.ItemsSource = transactionTypeStringlist;
+            SetTransactionTypeComboBox(IncOrDecToggleSwitch.IsOn);
 
             // -------------------------------------------------------------------------
 
             // 상세정보입력 레이아웃 추가
             detailGridArray.Add(NewDetailGrid());
             UIStackPanel.Children.Add(detailGridArray[0]);
-
-            TransactionDatePicker.Date = DateTime.Today;
-            Debug.WriteLine(TransactionDatePicker.Date.ToString());
         }
 
         private async void ReceiptImageButton_ClickAsync(object sender, RoutedEventArgs e)
@@ -232,28 +213,6 @@ namespace PersonalAccountBookUWP.Controller
 
         }
 
-        private void IncOrDecComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var transactionTypelist = new List<string>();
-            if (IncOrDecComboBox.SelectedValue.ToString().Equals("+"))
-            {
-                transactionTypelist.Add("받음");
-            }
-            else if (IncOrDecComboBox.SelectedValue.ToString().Equals("-"))
-            {
-                transactionTypelist.Add("구매");
-                transactionTypelist.Add("계좌이체");
-                transactionTypelist.Add("정기이체");
-                transactionTypelist.Add("요금납부");
-                transactionTypelist.Add("교통충전");
-            }
-            else
-            {
-                transactionTypelist.Add("ERROR");
-            }
-            TransactionTypeComboBox.ItemsSource = transactionTypelist;
-        }
-
         private void TodayCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             TransactionDatePicker.Date = DateTime.Today;
@@ -262,7 +221,47 @@ namespace PersonalAccountBookUWP.Controller
 
         private void TodayCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
+            TransactionDatePicker.Date = Convert.ToDateTime(Convert.ToString(App.localSettings.Values["date"]));
             TransactionDatePicker.IsEnabled = true;
+        }
+
+        private void IncOrDecToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            SetTransactionTypeComboBox(IncOrDecToggleSwitch.IsOn);
+        }
+
+        private void SetTransactionTypeComboBox(bool isOn)
+        {
+            var transactionTypeStringlist = new List<string>();
+
+            transactionTypelist.Clear();
+            if (isOn)
+            {
+                objects = DataService.instance.GetJsonArrayFromDB("getAddingTypes");
+            }
+            else
+            {
+                objects = DataService.instance.GetJsonArrayFromDB("getSubtractingTypes");
+            }
+
+            foreach (JObject element in objects)
+            {
+                transactionTypelist.Add(new TransactionType(element["id"].ToObject<int>(), element["name"].ToString()));
+            }
+
+            foreach (var transactionType in transactionTypelist)
+            {
+                transactionTypeStringlist.Add(transactionType.Name);
+            }
+            TransactionTypeComboBox.ItemsSource = transactionTypeStringlist;
+            if (isOn)
+            {
+                TransactionTypeComboBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["plusTtypeIndex"]);
+            }
+            else
+            {
+                TransactionTypeComboBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["minusTypeIndex"]);
+            }
         }
     }
 }
