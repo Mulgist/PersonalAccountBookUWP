@@ -30,7 +30,7 @@ namespace PersonalAccountBookUWP
                 throw;
             }
 
-            // 응답을 json화를 시킨다.
+            // 응답을 json화 시킨다.
             var json = response.Content.ReadAsStringAsync().Result;
             var objects = JArray.Parse(json);
 

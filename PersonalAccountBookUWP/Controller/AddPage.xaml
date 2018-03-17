@@ -162,6 +162,7 @@
                             Content="추가"
                             Click="AddDetailButton_Click"/>
                     <TextBlock Grid.Column="4"
+                               Name="AmountTextBlock"
                                Text="합계"
                                VerticalAlignment="Center" />
                 </Grid>

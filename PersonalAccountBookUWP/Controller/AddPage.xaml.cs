@@ -10,6 +10,7 @@ using Windows.Storage.Pickers;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
 using Newtonsoft.Json.Linq;
+using Windows.UI.Popups;
 
 namespace PersonalAccountBookUWP.Controller
 {
@@ -59,15 +60,15 @@ namespace PersonalAccountBookUWP.Controller
             // -------------------------------------------------------------------------
 
             // Default Selection
-            IncOrDecToggleSwitch.IsOn = true;
+            IncOrDecToggleSwitch.IsOn = Convert.ToBoolean(App.localSettings.Values["inOrDec"]);
 
             // -------------------------------------------------------------------------
 
             currencyList.Add("\\");
-            currencyList.Add("$");
-            currencyList.Add("€");
-            currencyList.Add("£");
-            currencyList.Add("¥");
+            // currencyList.Add("$");
+            // currencyList.Add("€");
+            // currencyList.Add("£");
+            // currencyList.Add("¥");
             CurrencyComboBox.ItemsSource = currencyList;
             CurrencyComboBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["currencyIndex"]);
 
@@ -121,14 +122,56 @@ namespace PersonalAccountBookUWP.Controller
             return detailGrid;
         }
 
+        // 지우개 버튼을 누르면 초기화함
         private void EraseButton_Click(object sender, RoutedEventArgs e)
         {
+            TodayCheckBox.IsChecked = false;
+            TransactionDatePicker.IsEnabled = true;
+            TransactionDatePicker.Date = Convert.ToDateTime(Convert.ToString(App.localSettings.Values["date"]));
+            AccountChooseBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["accountIndex"]);
+            BeforeBalanceTextBlock.Text = "계산 전 잔액";
+            IncOrDecToggleSwitch.IsOn = Convert.ToBoolean(App.localSettings.Values["inOrDec"]);
+            CurrencyComboBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["currencyIndex"]);
+            AmountTextBox.Text = "";
+            SetTransactionTypeComboBox(IncOrDecToggleSwitch.IsOn);
+            BankBookSuggestBox.Text = "";
+            CardBookSuggestBox.Text = "";
+            ReceiptImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/AddImage.png", UriKind.Absolute));
+            AmountTextBlock.Text = "합계";
+            for (int i = detailGridArray.Count - 1; i >= 0; i--)
+            {
+                // 8은 세부내역들이 있는 Grid의 StackPanel 인덱스
+                UIStackPanel.Children.RemoveAt(i + 8);
+            }
+            detailGridArray.Clear();
+            detailGridArray.Add(NewDetailGrid());
+            UIStackPanel.Children.Add(detailGridArray[0]);
             
+            // detailGridArray의 요소에 접근하는 구문
+            // detailGridArray[0].Children.Cast<TextBox>().Where(i => Grid.GetColumn(i) == 1).First().Text = "30000";
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
+            int tempInt = 0;
+            bool canConvert = false;
+            if (AmountTextBox.Text == "")
+            {
+                // 내용 부족이 있으면 메시지처리하고 return함
+                MessageBoxOpen("내용이 부족합니다.");
+                return;
+            }
+            else if (!(int.TryParse(AmountTextBox.Text, out tempInt)))
+            {
+                // 거래금액이 숫자가 아니면 메시지처리하고 return함
+                MessageBoxOpen("금액에 숫자만 적어주세요.");
+                return;
+            }
+            else
+            {
+                // 내용 검증 통과 완료. 서버로 업로드한다.
 
+            }
         }
 
         // 이미지 파일 열기
@@ -262,6 +305,12 @@ namespace PersonalAccountBookUWP.Controller
             {
                 TransactionTypeComboBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["minusTypeIndex"]);
             }
+        }
+
+        private async void MessageBoxOpen(string showString)
+        {
+            var dialog = new MessageDialog(showString);
+            await dialog.ShowAsync();
         }
     }
 }
