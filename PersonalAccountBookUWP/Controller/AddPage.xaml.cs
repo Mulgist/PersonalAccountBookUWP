@@ -94,6 +94,15 @@ namespace PersonalAccountBookUWP.Controller
             UIStackPanel.Children.Add(detailGridArray.Last());
         }
 
+        private void RemoveDetailButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (detailGridArray.Count > 0)
+            {
+                detailGridArray.RemoveAt(detailGridArray.Count - 1);
+                UIStackPanel.Children.RemoveAt(detailGridArray.Count - 1 + 9);
+            }
+        }
+
         private Grid NewDetailGrid()
         {
             // 세부내역 항목에 대한 Grid
@@ -146,32 +155,71 @@ namespace PersonalAccountBookUWP.Controller
             detailGridArray.Clear();
             detailGridArray.Add(NewDetailGrid());
             UIStackPanel.Children.Add(detailGridArray[0]);
-            
-            // detailGridArray의 요소에 접근하는 구문
-            // detailGridArray[0].Children.Cast<TextBox>().Where(i => Grid.GetColumn(i) == 1).First().Text = "30000";
         }
 
+        // 저장 버튼을 누르면 검증 후 업로드함
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             int tempInt = 0;
             bool canConvert = false;
-            if (AmountTextBox.Text == "")
+
+            // 검증 1. 세부 내역 항목이 하나도 없는지
+            if (detailGridArray.Count == 0)
             {
-                // 내용 부족이 있으면 메시지처리하고 return함
+                MessageBoxOpen("세부 내역에 내용을 작성해주세요.");
+                return;
+            }
+
+            // 검증 2. 내용 부족이 있는지. (빈칸이 하나라도 있으면 안된다. 영수증 이미지 제외)
+            if (AmountTextBox.Text == "" || BankBookSuggestBox.Text == "" || CardBookSuggestBox.Text == "")
+            {
                 MessageBoxOpen("내용이 부족합니다.");
                 return;
             }
-            else if (!(int.TryParse(AmountTextBox.Text, out tempInt)))
+
+            for (int i = 0; i < detailGridArray.Count; i++)
+            {
+                if (detailGridArray[i].Children.Cast<TextBox>().Where(j => Grid.GetColumn(j) == 0).First().Text == "" || 
+                    detailGridArray[i].Children.Cast<TextBox>().Where(j => Grid.GetColumn(j) == 1).First().Text == "")
+                {
+                    MessageBoxOpen("내용이 부족합니다.");
+                    return;
+                }
+            }
+
+            // 검증 3. 거래금액이 숫자가 맞는지
+            if (!int.TryParse(AmountTextBox.Text, out tempInt))
             {
                 // 거래금액이 숫자가 아니면 메시지처리하고 return함
                 MessageBoxOpen("금액에 숫자만 적어주세요.");
                 return;
             }
-            else
-            {
-                // 내용 검증 통과 완료. 서버로 업로드한다.
 
+            for (int i = 0; i < detailGridArray.Count; i++)
+            {
+                canConvert = int.TryParse(detailGridArray[i].Children.Cast<TextBox>().Where(j => Grid.GetColumn(j) == 1).First().Text, out tempInt);
+                if (!canConvert)
+                {
+                    MessageBoxOpen("금액에 숫자만 적어주세요.");
+                    return;
+                }
             }
+
+            // 검증 4. 세부 내역의 금액의 합계가 거래 금액과 같은지
+            int costSum = 0;
+            for (int i = 0; i < detailGridArray.Count; i++)
+            {
+                costSum += int.Parse(detailGridArray[i].Children.Cast<TextBox>().Where(j => Grid.GetColumn(j) == 1).First().Text);
+            }
+
+            if (int.Parse(AmountTextBox.Text) != costSum)
+            {
+                MessageBoxOpen("세부 내역 금액의 합계가 거래 금액과 같지 않습니다.");
+                return;
+            }
+
+            // 내용 검증 통과 완료. 내용을 서버로 업로드한다.
+
         }
 
         // 이미지 파일 열기

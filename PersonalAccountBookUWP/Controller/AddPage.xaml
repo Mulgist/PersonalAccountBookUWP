@@ -152,6 +152,8 @@
                         <ColumnDefinition Width="20" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="20" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0"
@@ -161,7 +163,11 @@
                             Name="AddDetailButton"
                             Content="추가"
                             Click="AddDetailButton_Click"/>
-                    <TextBlock Grid.Column="4"
+                    <Button Grid.Column="4"
+                            Name="RemoveDetailButton"
+                            Content="제거"
+                            Click="RemoveDetailButton_Click"/>
+                    <TextBlock Grid.Column="6"
                                Name="AmountTextBlock"
                                Text="합계"
                                VerticalAlignment="Center" />
