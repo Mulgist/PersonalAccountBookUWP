@@ -45,11 +45,12 @@
                         Header="계좌 선택"
                         PlaceholderText="계좌 선택"
                         Margin="10,10,10,10"
-                        HorizontalAlignment="Stretch"/>
+                        HorizontalAlignment="Stretch"
+                        SelectionChanged="AccountChooseBox_SelectionChanged" />
                     <TextBlock Grid.Column="1"
                                Name="BeforeBalanceTextBlock"
                                Text="계산 전 잔액"
-                               Margin="10,45,10,10"/>
+                               Margin="10,45,10,10" />
                 </Grid>
 
                 <Grid>
@@ -112,9 +113,7 @@
                                     Header="거래 대상"
                                     PlaceholderText="통장내역에 있는 거래 대상 입력"
                                     Margin="10,10,10,10"
-                                    QueryIcon="Find"
                                     TextChanged="BankBookSuggestBox_TextChanged"
-                                    QuerySubmitted="BankBookSuggestBox_QuerySubmitted"
                                     SuggestionChosen="BankBookSuggestBox_SuggestionChosen"
                                     HorizontalAlignment="Stretch"/>
                     <!-- " TextBox Grid.Row="1" Grid.Column="0" Name="CardBookTextBox" Header="자세한 거래 대상" PlaceholderText="(옵션) 카드내역에 있는 거래 대상 입력" Margin="10,10,10,10" IsSpellCheckEnabled="True" HorizontalAlignment="Stretch"/-->
@@ -124,9 +123,7 @@
                                     Header="자세한 거래 대상"
                                     PlaceholderText="(옵션) 카드내역에 있는 거래 대상 입력"
                                     Margin="10,10,10,10"
-                                    QueryIcon="Find"
                                     TextChanged="CardBookSuggestBox_TextChanged"
-                                    QuerySubmitted="CardBookSuggestBox_QuerySubmitted"
                                     SuggestionChosen="CardBookSuggestBox_SuggestionChosen"
                                     HorizontalAlignment="Stretch"/>
                 </Grid>

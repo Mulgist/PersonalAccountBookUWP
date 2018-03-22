@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
 using Newtonsoft.Json.Linq;
 using Windows.UI.Popups;
+using System.Collections.ObjectModel;
 
 namespace PersonalAccountBookUWP.Controller
 {
@@ -19,16 +21,22 @@ namespace PersonalAccountBookUWP.Controller
         private List<Grid> detailGridArray = new List<Grid>();
         private StorageFile file;
 
+        // 요청할 때 사용하는 자료구조
+        private Dictionary<string, string> requestDic = new Dictionary<string, string>();
+
         // DB에 요청, 응답받을 때 필요한 것들
         private JArray objects;
 
         // 이 페이지에 필요한 리스트. 이 클래스 전역에서 필요함
         private List<Account> accountList = new List<Account>();
         private List<TransactionType> transactionTypelist = new List<TransactionType>();
+        private ObservableCollection<string> bankBookSuggestions = new ObservableCollection<string>();
+        private ObservableCollection<string> cardBookSuggestions = new ObservableCollection<string>();
+        private ObservableCollection<string> detailBookSuggestions = new ObservableCollection<string>();
 
         public AddPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             // ComboBox의 항목 추가
             var accountStringList = new List<string>();
@@ -37,7 +45,10 @@ namespace PersonalAccountBookUWP.Controller
 
             TransactionDatePicker.Date = Convert.ToDateTime(Convert.ToString(App.localSettings.Values["date"]));
 
-            objects = DataService.instance.GetJsonArrayFromDB("getAccounts");
+            requestDic.Clear();
+            requestDic.Add("do", "getAccounts");
+
+            objects = DataService.instance.GetJsonArrayFromDB(requestDic);
 
             // json이 파싱된 객체인 objets를 분해하여 데이터를 알맞게 리스트에 넣는다.
             foreach (JObject element in objects)
@@ -83,11 +94,41 @@ namespace PersonalAccountBookUWP.Controller
             UIStackPanel.Children.Add(detailGridArray[0]);
         }
 
+        // 오늘 체크박스 체크할 시 작업하는 함수
+        private void TodayCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            TransactionDatePicker.Date = DateTime.Today;
+            TransactionDatePicker.IsEnabled = false;
+        }
+
+        // 오늘 체크박스 체크 해제 시
+        private void TodayCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            TransactionDatePicker.Date = Convert.ToDateTime(Convert.ToString(App.localSettings.Values["date"]));
+            TransactionDatePicker.IsEnabled = true;
+        }
+
+        // + / - 전환 시 거래유형의 항목이 바뀜
+        private void IncOrDecToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            SetTransactionTypeComboBox(IncOrDecToggleSwitch.IsOn);
+        }
+
+        // 계좌 선택 시 잔액 출력 기능
+        private void AccountChooseBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int beforeBalance = accountList[AccountChooseBox.SelectedIndex].Balance;
+            // string.Format("{0}", beforeBalance.ToString("#,##0")) 은 천단위로 콤마 찍어주는 코드
+            BeforeBalanceTextBlock.Text = "잔액 " + string.Format("{0}", beforeBalance.ToString("#,##0")) + " 원";
+        }
+
+        // 영수증 이미지 버튼을 눌렀을 때
         private async void ReceiptImageButton_ClickAsync(object sender, RoutedEventArgs e)
         {
             await FilePickAsync();
         }
 
+        // 세부 내역 관련 기능
         private void AddDetailButton_Click(object sender, RoutedEventArgs e)
         {
             detailGridArray.Add(NewDetailGrid());
@@ -110,14 +151,16 @@ namespace PersonalAccountBookUWP.Controller
             ColumnDefinition detailColumn = new ColumnDefinition();
             ColumnDefinition costColumn = new ColumnDefinition();
             ColumnDefinition emptyColumn = new ColumnDefinition();
-            TextBox detailTextBox = new TextBox();
+            AutoSuggestBox detailSuggestBox = new AutoSuggestBox();
             TextBox costTextBox = new TextBox();
             detailColumn.Width = new GridLength(50, GridUnitType.Star);
             costColumn.Width = new GridLength(30, GridUnitType.Star);
             emptyColumn.Width = new GridLength(20, GridUnitType.Star);
-            detailTextBox.Margin = new Thickness(10, 10, 10, 10);
-            detailTextBox.PlaceholderText = "구체적인 항목 작성";
-            detailTextBox.SetValue(Grid.ColumnProperty, 0);
+            detailSuggestBox.Margin = new Thickness(10, 10, 10, 10);
+            detailSuggestBox.PlaceholderText = "구체적인 항목 작성";
+            detailSuggestBox.TextChanged += DetailSuggestBox_TextChanged;
+            detailSuggestBox.SuggestionChosen += DetailSuggestBox_SuggestionChosen;
+            detailSuggestBox.SetValue(Grid.ColumnProperty, 0);
             costTextBox.Margin = new Thickness(10, 10, 10, 10);
             costTextBox.PlaceholderText = "금액 작성";
             costTextBox.SetValue(Grid.ColumnProperty, 1);
@@ -125,7 +168,7 @@ namespace PersonalAccountBookUWP.Controller
             detailGrid.ColumnDefinitions.Add(detailColumn);
             detailGrid.ColumnDefinitions.Add(costColumn);
             detailGrid.ColumnDefinitions.Add(emptyColumn);
-            detailGrid.Children.Add(detailTextBox);
+            detailGrid.Children.Add(detailSuggestBox);
             detailGrid.Children.Add(costTextBox);
 
             return detailGrid;
@@ -254,6 +297,7 @@ namespace PersonalAccountBookUWP.Controller
             return bitmapImage;
         }
 
+        // 거래 대상에 글자를 입력할때마다
         private void BankBookSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
             // Only get results when it was a user typing,
@@ -263,78 +307,107 @@ namespace PersonalAccountBookUWP.Controller
             {
                 //Set the ItemsSource to be your filtered dataset
                 //sender.ItemsSource = dataset;
-                var items = new List<string>();
-                items.Add("df");
-                items.Add("sss");
-                sender.ItemsSource = new List<string>();
+                bankBookSuggestions.Clear();
+                // 텍스트가 비면 나오는 오류 방지
+                if (sender.Text == "")
+                {
+                    sender.ItemsSource = bankBookSuggestions;
+                    return;
+                }
+
+                requestDic.Clear();
+                requestDic.Add("do", "getBankSuggestions");
+                requestDic.Add("keyword", sender.Text);
+
+                objects = DataService.instance.GetJsonArrayFromDB(requestDic);
+                foreach (JObject element in objects)
+                {
+                    bankBookSuggestions.Add(element["result"].ToString());
+                }
             }
+            sender.ItemsSource = bankBookSuggestions;
         }
 
-        private void BankBookSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
-        {
-            // Set sender.Text. You can use args.SelectedItem to build your text string.
-        }
-
+        // 거래 대상의 추천단어를 선택하면
         private void BankBookSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
-            /*
-            if (args.ChosenSuggestion != null)
-            {
-                // User selected an item from the suggestion list, take an action on it here.
-            }
-            else
-            {
-                // Use args.QueryText to determine what to do.
-            }
-            */
+            sender.Text = args.SelectedItem.ToString();
         }
 
+        // 자세한 거래 대상에 글자를 입력할때마다
         private void CardBookSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                cardBookSuggestions.Clear();
+                if (sender.Text == "")
+                {
+                    sender.ItemsSource = cardBookSuggestions;
+                    return;
+                }
 
+                requestDic.Clear();
+                requestDic.Add("do", "getCardSuggestions");
+                requestDic.Add("keyword", sender.Text);
+
+                objects = DataService.instance.GetJsonArrayFromDB(requestDic);
+                foreach (JObject element in objects)
+                {
+                    cardBookSuggestions.Add(element["result"].ToString());
+                }
+            }
+            sender.ItemsSource = cardBookSuggestions;
         }
 
-        private void CardBookSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
-        {
-
-        }
-
+        // 자세한 거래 대상의 추천단어를 선택하면
         private void CardBookSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
-
+            sender.Text = args.SelectedItem.ToString();
         }
 
-        private void TodayCheckBox_Checked(object sender, RoutedEventArgs e)
+        // 세부 내역에 글자를 입력할때마다
+        private void DetailSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            TransactionDatePicker.Date = DateTime.Today;
-            TransactionDatePicker.IsEnabled = false;
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                detailBookSuggestions.Clear();
+                if (sender.Text == "")
+                {
+                    sender.ItemsSource = detailBookSuggestions;
+                    return;
+                }
+
+                requestDic.Clear();
+                requestDic.Add("do", "getDetailSuggestions");
+                requestDic.Add("keyword", sender.Text);
+
+                objects = DataService.instance.GetJsonArrayFromDB(requestDic);
+                foreach (JObject element in objects)
+                {
+                    detailBookSuggestions.Add(element["result"].ToString());
+                }
+            }
+            sender.ItemsSource = detailBookSuggestions;
         }
 
-        private void TodayCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        // 세부 내역의 추천단어를 선택하면
+        private void DetailSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
-            TransactionDatePicker.Date = Convert.ToDateTime(Convert.ToString(App.localSettings.Values["date"]));
-            TransactionDatePicker.IsEnabled = true;
+            sender.Text = args.SelectedItem.ToString();
         }
 
-        private void IncOrDecToggleSwitch_Toggled(object sender, RoutedEventArgs e)
-        {
-            SetTransactionTypeComboBox(IncOrDecToggleSwitch.IsOn);
-        }
-
+        // 거래유형의 항목을 바꾸는 기능
         private void SetTransactionTypeComboBox(bool isOn)
         {
             var transactionTypeStringlist = new List<string>();
 
             transactionTypelist.Clear();
-            if (isOn)
-            {
-                objects = DataService.instance.GetJsonArrayFromDB("getAddingTypes");
-            }
+            requestDic.Clear();
+            if (isOn) { requestDic.Add("do", "getAddingTypes"); }
             else
-            {
-                objects = DataService.instance.GetJsonArrayFromDB("getSubtractingTypes");
-            }
+            { requestDic.Add("do", "getSubtractingTypes"); }
 
+            objects = DataService.instance.GetJsonArrayFromDB(requestDic);
             foreach (JObject element in objects)
             {
                 transactionTypelist.Add(new TransactionType(element["id"].ToObject<int>(), element["name"].ToString()));

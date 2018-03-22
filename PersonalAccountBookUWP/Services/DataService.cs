@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,10 +12,16 @@ namespace PersonalAccountBookUWP
         public static DataService instance = new DataService();
         private HttpClient restful = new HttpClient();
 
-        public JArray GetJsonArrayFromDB(string method)
+        public JArray GetJsonArrayFromDB(Dictionary<string, string> requestDic)
         {
+            var requestString = "";
             // 요청문을 만든다.
-            var request = new HttpRequestMessage(HttpMethod.Get, App.RestfulUrl + "?method=" + (string)App.MethodElement.Element(method));
+            foreach (KeyValuePair<string, string> element in requestDic)
+            {
+                requestString += (string)App.MethodElement.Element(element.Key) + "=" + (string)App.MethodElement.Element(element.Value) + "&";
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Get, App.RestfulUrl + "?" + requestString);
             var response = new HttpResponseMessage();
             try
             {
