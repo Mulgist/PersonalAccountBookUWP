@@ -5,7 +5,7 @@
         private int id;
         private string name;
 
-        public int Id => Id;
+        public int Id => id;
         public string Name => name;
 
         public TransactionType(int id, string name)

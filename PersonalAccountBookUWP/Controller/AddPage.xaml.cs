@@ -13,6 +13,7 @@ using Windows.Storage.Streams;
 using Newtonsoft.Json.Linq;
 using Windows.UI.Popups;
 using System.Collections.ObjectModel;
+using System.Text;
 
 namespace PersonalAccountBookUWP.Controller
 {
@@ -46,7 +47,7 @@ namespace PersonalAccountBookUWP.Controller
             TransactionDatePicker.Date = Convert.ToDateTime(Convert.ToString(App.localSettings.Values["date"]));
 
             requestDic.Clear();
-            requestDic.Add("do", "getAccounts");
+            requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("getAccounts"));
 
             objects = DataService.instance.GetJsonArrayFromDB(requestDic);
 
@@ -152,7 +153,7 @@ namespace PersonalAccountBookUWP.Controller
             ColumnDefinition costColumn = new ColumnDefinition();
             ColumnDefinition emptyColumn = new ColumnDefinition();
             AutoSuggestBox detailSuggestBox = new AutoSuggestBox();
-            TextBox costTextBox = new TextBox();
+            AutoSuggestBox costTextBox = new AutoSuggestBox();
             detailColumn.Width = new GridLength(50, GridUnitType.Star);
             costColumn.Width = new GridLength(30, GridUnitType.Star);
             emptyColumn.Width = new GridLength(20, GridUnitType.Star);
@@ -188,6 +189,7 @@ namespace PersonalAccountBookUWP.Controller
             SetTransactionTypeComboBox(IncOrDecToggleSwitch.IsOn);
             BankBookSuggestBox.Text = "";
             CardBookSuggestBox.Text = "";
+            file = null;
             ReceiptImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/AddImage.png", UriKind.Absolute));
             AmountTextBlock.Text = "합계";
             for (int i = detailGridArray.Count - 1; i >= 0; i--)
@@ -206,6 +208,11 @@ namespace PersonalAccountBookUWP.Controller
             int tempInt = 0;
             bool canConvert = false;
 
+            // 테스트 업로드
+            // Task<string> result = DataService.instance.UploadImageFileAsync(file, "aaa.jpg");
+            // MessageBoxOpen(result.Result);
+            // DataService.instance.UploadImageFileAsync(file, "aaa.jpg");
+
             // 검증 1. 세부 내역 항목이 하나도 없는지
             if (detailGridArray.Count == 0)
             {
@@ -222,8 +229,8 @@ namespace PersonalAccountBookUWP.Controller
 
             for (int i = 0; i < detailGridArray.Count; i++)
             {
-                if (detailGridArray[i].Children.Cast<TextBox>().Where(j => Grid.GetColumn(j) == 0).First().Text == "" || 
-                    detailGridArray[i].Children.Cast<TextBox>().Where(j => Grid.GetColumn(j) == 1).First().Text == "")
+                if (detailGridArray[i].Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 0).First().Text == "" ||
+                    detailGridArray[i].Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 1).First().Text == "")
                 {
                     MessageBoxOpen("내용이 부족합니다.");
                     return;
@@ -240,7 +247,7 @@ namespace PersonalAccountBookUWP.Controller
 
             for (int i = 0; i < detailGridArray.Count; i++)
             {
-                canConvert = int.TryParse(detailGridArray[i].Children.Cast<TextBox>().Where(j => Grid.GetColumn(j) == 1).First().Text, out tempInt);
+                canConvert = int.TryParse(detailGridArray[i].Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 1).First().Text, out tempInt);
                 if (!canConvert)
                 {
                     MessageBoxOpen("금액에 숫자만 적어주세요.");
@@ -252,7 +259,7 @@ namespace PersonalAccountBookUWP.Controller
             int costSum = 0;
             for (int i = 0; i < detailGridArray.Count; i++)
             {
-                costSum += int.Parse(detailGridArray[i].Children.Cast<TextBox>().Where(j => Grid.GetColumn(j) == 1).First().Text);
+                costSum += int.Parse(detailGridArray[i].Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 1).First().Text);
             }
 
             if (int.Parse(AmountTextBox.Text) != costSum)
@@ -262,6 +269,63 @@ namespace PersonalAccountBookUWP.Controller
             }
 
             // 내용 검증 통과 완료. 내용을 서버로 업로드한다.
+
+            // 업로드하기 전에 ID를 정한다. 거래날짜의 내역을 뒤져 그날 최근에 만들어진 내역을 찾아 새로운 ID를 만든다.
+            
+            // ex. "2018-02-11 오전 12:00:00 +09:00"
+            var date = TransactionDatePicker.Date.ToString();
+            var blankIndex = date.IndexOf(' ');
+            var getIdString = "";
+            int getIdNumber = 0;
+            var result = "";
+            // ex. "2018-02-11"
+            date = date.Substring(0, blankIndex);
+
+            requestDic.Clear();
+            requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("findRecentHistory"));
+            requestDic.Add((string)App.MethodElement.Element("day"), date);
+            objects = DataService.instance.GetJsonArrayFromDB(requestDic);
+            
+            if (objects.Count != 0)
+            {
+                foreach (JObject element in objects)
+                {
+                    getIdString = element["id"].ToString().Substring(9);
+                    int.TryParse(getIdString, out getIdNumber);
+                }
+            }
+            var year = date.Substring(0, 4);
+            var month = date.Substring(5, 2);
+            var day = date.Substring(8, 2);
+            var newId = year + month + day + "_" + string.Format("{0:D2}", ++getIdNumber);
+
+            // 새로운 ID를 가지고 내역을 추가한다.
+            requestDic.Clear();
+            requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("registerHistory"));
+            requestDic.Add("new_id", newId);
+            requestDic.Add("date", date);
+            requestDic.Add("account", accountList[AccountChooseBox.SelectedIndex].Id.ToString());
+            requestDic.Add("type", transactionTypelist[TransactionTypeComboBox.SelectedIndex].Id.ToString());
+            requestDic.Add("bankbook", BankBookSuggestBox.Text);
+            requestDic.Add("cardbook", CardBookSuggestBox.Text);
+            requestDic.Add("amount", AmountTextBox.Text);
+
+            objects = DataService.instance.GetJsonArrayFromDB(requestDic);
+
+            // 이미지가 있으면 저장한다.
+            if (file != null)
+            {
+                var newFileName = newId + "번거래_명세표.jpg";
+                // byte[] bytes = Encoding.ASCII.GetBytes(newFileName);
+                // newFileName = Encoding.UTF8.GetString(bytes);
+                DataService.instance.UploadImageFileAsync(file, newFileName);
+            }
+
+            foreach (JObject element in objects)
+            {
+                result = element["result"].ToString();
+            }
+            // MessageBoxOpen(result);
 
         }
 
@@ -316,8 +380,8 @@ namespace PersonalAccountBookUWP.Controller
                 }
 
                 requestDic.Clear();
-                requestDic.Add("do", "getBankSuggestions");
-                requestDic.Add("keyword", sender.Text);
+                requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("getBankSuggestions"));
+                requestDic.Add((string)App.MethodElement.Element("keyword"), sender.Text);
 
                 objects = DataService.instance.GetJsonArrayFromDB(requestDic);
                 foreach (JObject element in objects)
@@ -347,8 +411,8 @@ namespace PersonalAccountBookUWP.Controller
                 }
 
                 requestDic.Clear();
-                requestDic.Add("do", "getCardSuggestions");
-                requestDic.Add("keyword", sender.Text);
+                requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("getCardSuggestions"));
+                requestDic.Add((string)App.MethodElement.Element("keyword"), sender.Text);
 
                 objects = DataService.instance.GetJsonArrayFromDB(requestDic);
                 foreach (JObject element in objects)
@@ -378,8 +442,8 @@ namespace PersonalAccountBookUWP.Controller
                 }
 
                 requestDic.Clear();
-                requestDic.Add("do", "getDetailSuggestions");
-                requestDic.Add("keyword", sender.Text);
+                requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("getDetailSuggestions"));
+                requestDic.Add((string)App.MethodElement.Element("keyword"), sender.Text);
 
                 objects = DataService.instance.GetJsonArrayFromDB(requestDic);
                 foreach (JObject element in objects)
@@ -403,9 +467,9 @@ namespace PersonalAccountBookUWP.Controller
 
             transactionTypelist.Clear();
             requestDic.Clear();
-            if (isOn) { requestDic.Add("do", "getAddingTypes"); }
+            if (isOn) { requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("getAddingTypes")); }
             else
-            { requestDic.Add("do", "getSubtractingTypes"); }
+            { requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("getSubtractingTypes")); }
 
             objects = DataService.instance.GetJsonArrayFromDB(requestDic);
             foreach (JObject element in objects)
