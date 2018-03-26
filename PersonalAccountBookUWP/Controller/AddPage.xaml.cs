@@ -205,13 +205,7 @@ namespace PersonalAccountBookUWP.Controller
         // 저장 버튼을 누르면 검증 후 업로드함
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            int tempInt = 0;
             bool canConvert = false;
-
-            // 테스트 업로드
-            // Task<string> result = DataService.instance.UploadImageFileAsync(file, "aaa.jpg");
-            // MessageBoxOpen(result.Result);
-            // DataService.instance.UploadImageFileAsync(file, "aaa.jpg");
 
             // 검증 1. 세부 내역 항목이 하나도 없는지
             if (detailGridArray.Count == 0)
@@ -227,10 +221,10 @@ namespace PersonalAccountBookUWP.Controller
                 return;
             }
 
-            for (int i = 0; i < detailGridArray.Count; i++)
+            foreach (var detail in detailGridArray)
             {
-                if (detailGridArray[i].Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 0).First().Text == "" ||
-                    detailGridArray[i].Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 1).First().Text == "")
+                if (detail.Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 0).First().Text == "" ||
+                    detail.Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 1).First().Text == "")
                 {
                     MessageBoxOpen("내용이 부족합니다.");
                     return;
@@ -238,16 +232,16 @@ namespace PersonalAccountBookUWP.Controller
             }
 
             // 검증 3. 거래금액이 숫자가 맞는지
-            if (!int.TryParse(AmountTextBox.Text, out tempInt))
+            if (!int.TryParse(AmountTextBox.Text, out int tempInt))
             {
                 // 거래금액이 숫자가 아니면 메시지처리하고 return함
                 MessageBoxOpen("금액에 숫자만 적어주세요.");
                 return;
             }
 
-            for (int i = 0; i < detailGridArray.Count; i++)
+            foreach (var detail in detailGridArray)
             {
-                canConvert = int.TryParse(detailGridArray[i].Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 1).First().Text, out tempInt);
+                canConvert = int.TryParse(detail.Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 1).First().Text, out tempInt);
                 if (!canConvert)
                 {
                     MessageBoxOpen("금액에 숫자만 적어주세요.");
@@ -257,9 +251,9 @@ namespace PersonalAccountBookUWP.Controller
 
             // 검증 4. 세부 내역의 금액의 합계가 거래 금액과 같은지
             int costSum = 0;
-            for (int i = 0; i < detailGridArray.Count; i++)
+            foreach (var detail in detailGridArray)
             {
-                costSum += int.Parse(detailGridArray[i].Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 1).First().Text);
+                costSum += int.Parse(detail.Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 1).First().Text);
             }
 
             if (int.Parse(AmountTextBox.Text) != costSum)
@@ -298,6 +292,12 @@ namespace PersonalAccountBookUWP.Controller
             var month = date.Substring(5, 2);
             var day = date.Substring(8, 2);
             var newId = year + month + day + "_" + string.Format("{0:D2}", ++getIdNumber);
+            var plusOrMinus = "";
+            
+            if (!transactionTypelist[TransactionTypeComboBox.SelectedIndex].IsEarn)
+            {
+                plusOrMinus = "-";
+            }
 
             // 새로운 ID를 가지고 내역을 추가한다.
             requestDic.Clear();
@@ -308,24 +308,83 @@ namespace PersonalAccountBookUWP.Controller
             requestDic.Add("type", transactionTypelist[TransactionTypeComboBox.SelectedIndex].Id.ToString());
             requestDic.Add("bankbook", BankBookSuggestBox.Text);
             requestDic.Add("cardbook", CardBookSuggestBox.Text);
-            requestDic.Add("amount", AmountTextBox.Text);
-
+            requestDic.Add("amount", plusOrMinus + AmountTextBox.Text);
             objects = DataService.instance.GetJsonArrayFromDB(requestDic);
-
-            // 이미지가 있으면 저장한다.
-            if (file != null)
-            {
-                var newFileName = newId + "번거래_명세표.jpg";
-                // byte[] bytes = Encoding.ASCII.GetBytes(newFileName);
-                // newFileName = Encoding.UTF8.GetString(bytes);
-                DataService.instance.UploadImageFileAsync(file, newFileName);
-            }
 
             foreach (JObject element in objects)
             {
                 result = element["result"].ToString();
             }
-            // MessageBoxOpen(result);
+
+            if (result == "fail")
+            {
+                MessageBoxOpen("저장에 실패했습니다.");
+                return;
+            }
+
+            // 세부 내역을 저장한다.
+            // for (int i = 0; i < detailGridArray.Count; i++)
+            foreach (var detail in detailGridArray)
+            {
+                var name = detail.Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 0).First().Text;
+                var price = detail.Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 1).First().Text;
+
+                requestDic.Clear();
+                requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("registerDetailHistory"));
+                requestDic.Add((string)App.MethodElement.Element("historyId"), newId);
+                requestDic.Add("name", name);
+                requestDic.Add("price", price);
+                objects = DataService.instance.GetJsonArrayFromDB(requestDic);
+
+                foreach (JObject element in objects)
+                {
+                    result = element["result"].ToString();
+                }
+
+                if (result == "fail")
+                {
+                    MessageBoxOpen("세부정보 저장에 실패했습니다.");
+                    return;
+                }
+            }
+
+            // 이미지가 있으면 저장한다.
+            if (file != null)
+            {
+                var newFileName = "transaction_receipt_" + newId + ".jpg";
+                DataService.instance.UploadImageFileAsync(file, newFileName);
+            }
+
+            // 통장 잔액 정보를 업데이트한다.
+            int.TryParse(AmountTextBox.Text, out int amount);
+            if (!transactionTypelist[TransactionTypeComboBox.SelectedIndex].IsEarn)
+            {
+                amount *= -1;
+            }
+
+            // temp
+            amount = 0;
+
+            requestDic.Clear();
+            requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("updateAccountBalance"));
+            requestDic.Add((string)App.MethodElement.Element("accountId"), transactionTypelist[TransactionTypeComboBox.SelectedIndex].Id.ToString());
+            requestDic.Add("amount", amount.ToString());
+            objects = DataService.instance.GetJsonArrayFromDB(requestDic);
+
+            foreach (JObject element in objects)
+            {
+                result = element["result"].ToString();
+            }
+
+            if (result == "fail")
+            {
+                MessageBoxOpen("계좌정보 업데이트에 실패했습니다.");
+                return;
+            }
+
+            MessageBoxOpen("저장을 완료했습니다.");
+
+
 
         }
 
@@ -474,7 +533,7 @@ namespace PersonalAccountBookUWP.Controller
             objects = DataService.instance.GetJsonArrayFromDB(requestDic);
             foreach (JObject element in objects)
             {
-                transactionTypelist.Add(new TransactionType(element["id"].ToObject<int>(), element["name"].ToString()));
+                transactionTypelist.Add(new TransactionType(element["id"].ToObject<int>(), element["name"].ToString(), element["isearn"].ToObject<int>()));
             }
 
             foreach (var transactionType in transactionTypelist)
