@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml.Media.Imaging;
@@ -13,7 +12,6 @@ using Windows.Storage.Streams;
 using Newtonsoft.Json.Linq;
 using Windows.UI.Popups;
 using System.Collections.ObjectModel;
-using System.Text;
 
 namespace PersonalAccountBookUWP.Controller
 {
@@ -38,61 +36,7 @@ namespace PersonalAccountBookUWP.Controller
         public AddPage()
         {
             InitializeComponent();
-
-            // ComboBox의 항목 추가
-            var accountStringList = new List<string>();
-            var incOrDecList = new List<string>();
-            var currencyList = new List<string>();
-
-            TransactionDatePicker.Date = Convert.ToDateTime(Convert.ToString(App.localSettings.Values["date"]));
-
-            requestDic.Clear();
-            requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("getAccounts"));
-
-            objects = DataService.instance.GetJsonArrayFromDB(requestDic);
-
-            // json이 파싱된 객체인 objets를 분해하여 데이터를 알맞게 리스트에 넣는다.
-            foreach (JObject element in objects)
-            {
-                accountList.Add(new Account(element["id"].ToObject<int>(), element["bank"].ToString(), element["name"].ToString(), element["number"].ToString(), element["balance"].ToObject<int>()));
-            }
-
-            // 계좌목록 Combobox에 표시할 string을 구성해 새 리스트에 넣고 있다.
-            foreach (var account in accountList)
-            {
-                accountStringList.Add(account.Bank + " " + account.Name + ": " + account.Number);
-            }
-
-            // 만들어진 string 리스트를 ComboBox의 소스로 넣는다.
-            AccountChooseBox.ItemsSource = accountStringList;
-
-            // 선택 인덱스 설정값에 따라 선택된다.
-            AccountChooseBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["accountIndex"]);
-
-            // -------------------------------------------------------------------------
-
-            // Default Selection
-            IncOrDecToggleSwitch.IsOn = Convert.ToBoolean(App.localSettings.Values["inOrDec"]);
-
-            // -------------------------------------------------------------------------
-
-            currencyList.Add("\\");
-            // currencyList.Add("$");
-            // currencyList.Add("€");
-            // currencyList.Add("£");
-            // currencyList.Add("¥");
-            CurrencyComboBox.ItemsSource = currencyList;
-            CurrencyComboBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["currencyIndex"]);
-
-            // -------------------------------------------------------------------------
-
-            SetTransactionTypeComboBox(IncOrDecToggleSwitch.IsOn);
-
-            // -------------------------------------------------------------------------
-
-            // 상세정보입력 레이아웃 추가
-            detailGridArray.Add(NewDetailGrid());
-            UIStackPanel.Children.Add(detailGridArray[0]);
+            ViewDidAppear();
         }
 
         // 오늘 체크박스 체크할 시 작업하는 함수
@@ -109,18 +53,23 @@ namespace PersonalAccountBookUWP.Controller
             TransactionDatePicker.IsEnabled = true;
         }
 
-        // + / - 전환 시 거래유형의 항목이 바뀜
+        // + / - 전환 시 거래유형의 항목이 바뀜 그리고 잔액갱신
         private void IncOrDecToggleSwitch_Toggled(object sender, RoutedEventArgs e)
         {
             SetTransactionTypeComboBox(IncOrDecToggleSwitch.IsOn);
+            LoadBalance();
+        }
+
+        // 거래 금액 항목을 빠져나왔을때
+        private void AmountTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            LoadBalance();
         }
 
         // 계좌 선택 시 잔액 출력 기능
         private void AccountChooseBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int beforeBalance = accountList[AccountChooseBox.SelectedIndex].Balance;
-            // string.Format("{0}", beforeBalance.ToString("#,##0")) 은 천단위로 콤마 찍어주는 코드
-            BeforeBalanceTextBlock.Text = "잔액 " + string.Format("{0}", beforeBalance.ToString("#,##0")) + " 원";
+            LoadBalance();
         }
 
         // 영수증 이미지 버튼을 눌렀을 때
@@ -178,28 +127,7 @@ namespace PersonalAccountBookUWP.Controller
         // 지우개 버튼을 누르면 초기화함
         private void EraseButton_Click(object sender, RoutedEventArgs e)
         {
-            TodayCheckBox.IsChecked = false;
-            TransactionDatePicker.IsEnabled = true;
-            TransactionDatePicker.Date = Convert.ToDateTime(Convert.ToString(App.localSettings.Values["date"]));
-            AccountChooseBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["accountIndex"]);
-            BeforeBalanceTextBlock.Text = "계산 전 잔액";
-            IncOrDecToggleSwitch.IsOn = Convert.ToBoolean(App.localSettings.Values["inOrDec"]);
-            CurrencyComboBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["currencyIndex"]);
-            AmountTextBox.Text = "";
-            SetTransactionTypeComboBox(IncOrDecToggleSwitch.IsOn);
-            BankBookSuggestBox.Text = "";
-            CardBookSuggestBox.Text = "";
-            file = null;
-            ReceiptImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/AddImage.png", UriKind.Absolute));
-            AmountTextBlock.Text = "합계";
-            for (int i = detailGridArray.Count - 1; i >= 0; i--)
-            {
-                // 8은 세부내역들이 있는 Grid의 StackPanel 인덱스
-                UIStackPanel.Children.RemoveAt(i + 8);
-            }
-            detailGridArray.Clear();
-            detailGridArray.Add(NewDetailGrid());
-            UIStackPanel.Children.Add(detailGridArray[0]);
+            ResetPage();
         }
 
         // 저장 버튼을 누르면 검증 후 업로드함
@@ -263,7 +191,6 @@ namespace PersonalAccountBookUWP.Controller
             }
 
             // 내용 검증 통과 완료. 내용을 서버로 업로드한다.
-
             // 업로드하기 전에 ID를 정한다. 거래날짜의 내역을 뒤져 그날 최근에 만들어진 내역을 찾아 새로운 ID를 만든다.
             
             // ex. "2018-02-11 오전 12:00:00 +09:00"
@@ -351,7 +278,7 @@ namespace PersonalAccountBookUWP.Controller
             // 이미지가 있으면 저장한다.
             if (file != null)
             {
-                var newFileName = "transaction_receipt_" + newId + ".jpg";
+                var newFileName = "transaction_receipt_" + newId + file.FileType;
                 DataService.instance.UploadImageFileAsync(file, newFileName);
             }
 
@@ -363,11 +290,11 @@ namespace PersonalAccountBookUWP.Controller
             }
 
             // temp
-            amount = 0;
+            // amount = 0;
 
             requestDic.Clear();
             requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("updateAccountBalance"));
-            requestDic.Add((string)App.MethodElement.Element("accountId"), transactionTypelist[TransactionTypeComboBox.SelectedIndex].Id.ToString());
+            requestDic.Add((string)App.MethodElement.Element("accountId"), accountList[AccountChooseBox.SelectedIndex].Id.ToString());
             requestDic.Add("amount", amount.ToString());
             objects = DataService.instance.GetJsonArrayFromDB(requestDic);
 
@@ -384,7 +311,8 @@ namespace PersonalAccountBookUWP.Controller
 
             MessageBoxOpen("저장을 완료했습니다.");
 
-
+            SaveLocalSettings();
+            ResetPage();
 
         }
 
@@ -423,13 +351,10 @@ namespace PersonalAccountBookUWP.Controller
         // 거래 대상에 글자를 입력할때마다
         private void BankBookSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            // Only get results when it was a user typing,
-            // otherwise assume the value got filled in by TextMemberPath
-            // or the handler for SuggestionChosen.
+            // Only get results when it was a user typing, otherwise assume the value got filled in by TextMemberPath or the handler for SuggestionChosen.
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
-                //Set the ItemsSource to be your filtered dataset
-                //sender.ItemsSource = dataset;
+                // Set the ItemsSource to be your filtered dataset.
                 bankBookSuggestions.Clear();
                 // 텍스트가 비면 나오는 오류 방지
                 if (sender.Text == "")
@@ -519,7 +444,75 @@ namespace PersonalAccountBookUWP.Controller
             sender.Text = args.SelectedItem.ToString();
         }
 
-        // 거래유형의 항목을 바꾸는 기능
+        // 초기 화면을 구성함
+        private void ViewDidAppear()
+        {
+            // ComboBox의 항목 추가
+            var accountStringList = new List<string>();
+            var currencyList = new List<string>();
+
+            TransactionDatePicker.Date = Convert.ToDateTime(Convert.ToString(App.localSettings.Values["date"]));
+
+            requestDic.Clear();
+            requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("getAccounts"));
+
+            objects = DataService.instance.GetJsonArrayFromDB(requestDic);
+
+            // json이 파싱된 객체인 objets를 분해하여 데이터를 알맞게 리스트에 넣는다.
+            foreach (JObject element in objects)
+            {
+                accountList.Add(new Account(element["id"].ToObject<int>(), element["bank"].ToString(), element["name"].ToString(), element["number"].ToString(), element["balance"].ToObject<int>()));
+            }
+
+            // 계좌목록 Combobox에 표시할 string을 구성해 새 리스트에 넣고 있다.
+            foreach (var account in accountList)
+            {
+                accountStringList.Add(account.Bank + " " + account.Name + ": " + account.Number);
+            }
+
+            // 만들어진 string 리스트를 ComboBox의 소스로 넣는다.
+            AccountChooseBox.ItemsSource = accountStringList;
+
+            // 선택 인덱스 설정값에 따라 선택된다.
+            AccountChooseBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["accountIndex"]);
+
+            // -------------------------------------------------------------------------
+
+            // Default Selection
+            IncOrDecToggleSwitch.IsOn = Convert.ToBoolean(App.localSettings.Values["inOrDec"]);
+
+            // -------------------------------------------------------------------------
+
+            currencyList.Add("\\");
+            // currencyList.Add("$");
+            // currencyList.Add("€");
+            // currencyList.Add("£");
+            // currencyList.Add("¥");
+            CurrencyComboBox.ItemsSource = currencyList;
+            CurrencyComboBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["currencyIndex"]);
+
+            // -------------------------------------------------------------------------
+
+            AfterBalanceTextBlock.Text = "계산 후 잔액 " + string.Format("{0}", accountList[AccountChooseBox.SelectedIndex].Balance.ToString("#,##0")) + " 원";
+
+            // -------------------------------------------------------------------------
+
+            SetTransactionTypeComboBox(IncOrDecToggleSwitch.IsOn);
+
+            // -------------------------------------------------------------------------
+
+            // 상세정보입력 레이아웃 추가
+            for (int i = detailGridArray.Count - 1; i >= 0; i--)
+            {
+                // 8은 세부내역들이 있는 Grid의 StackPanel 인덱스
+                UIStackPanel.Children.RemoveAt(i + 8);
+            }
+            detailGridArray.Clear();
+            detailGridArray.Add(NewDetailGrid());
+            UIStackPanel.Children.Add(detailGridArray[0]);
+        }
+
+        // 거래유형의 항목을 바꿈
         private void SetTransactionTypeComboBox(bool isOn)
         {
             var transactionTypeStringlist = new List<string>();
@@ -549,6 +542,72 @@ namespace PersonalAccountBookUWP.Controller
             {
                 TransactionTypeComboBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["minusTypeIndex"]);
             }
+        }
+
+        // AddPage에 입력된 내용을 초기화시킨다.
+        private void ResetPage()
+        {
+            var accountStringList = new List<string>();
+            TodayCheckBox.IsChecked = false;
+            TransactionDatePicker.IsEnabled = true;
+            TransactionDatePicker.Date = Convert.ToDateTime(Convert.ToString(App.localSettings.Values["date"]));
+            requestDic.Clear();
+            requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("getAccounts"));
+            objects = DataService.instance.GetJsonArrayFromDB(requestDic);
+            accountList.Clear();
+            foreach (JObject element in objects)
+            {
+                accountList.Add(new Account(element["id"].ToObject<int>(), element["bank"].ToString(), element["name"].ToString(), element["number"].ToString(), element["balance"].ToObject<int>()));
+            }
+            foreach (var account in accountList)
+            {
+                accountStringList.Add(account.Bank + " " + account.Name + ": " + account.Number);
+            }
+            // 계좌 선택을 재로드(잔액을 갱신하기 위함)할 때 나는 오류 방지
+            AccountChooseBox.SelectionChanged -= AccountChooseBox_SelectionChanged;
+            AccountChooseBox.ItemsSource = accountStringList;
+            AccountChooseBox.SelectionChanged += AccountChooseBox_SelectionChanged;
+            AccountChooseBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["accountIndex"]);
+            IncOrDecToggleSwitch.IsOn = Convert.ToBoolean(App.localSettings.Values["inOrDec"]);
+            CurrencyComboBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["currencyIndex"]);
+            AmountTextBox.Text = "";
+            LoadBalance();
+            SetTransactionTypeComboBox(IncOrDecToggleSwitch.IsOn);
+            BankBookSuggestBox.Text = "";
+            CardBookSuggestBox.Text = "";
+            file = null;
+            ReceiptImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/AddImage.png", UriKind.Absolute));
+            AmountTextBlock.Text = "합계";
+            for (int i = detailGridArray.Count - 1; i >= 0; i--)
+            {
+                // 8은 세부내역들이 있는 Grid의 StackPanel 인덱스
+                UIStackPanel.Children.RemoveAt(i + 8);
+            }
+            detailGridArray.Clear();
+            detailGridArray.Add(NewDetailGrid());
+            UIStackPanel.Children.Add(detailGridArray[0]);
+        }
+
+        private void LoadBalance()
+        {
+            var beforeBalance = accountList[AccountChooseBox.SelectedIndex].Balance;
+            var amount = 0;
+            // string.Format("{0}", beforeBalance.ToString("#,##0")) 은 천단위로 콤마 찍어주는 코드
+            BeforeBalanceTextBlock.Text = "잔액 " + string.Format("{0}", beforeBalance.ToString("#,##0")) + " 원";
+            
+            int.TryParse(AmountTextBox.Text, out amount);
+            if (IncOrDecToggleSwitch.IsOn) { AfterBalanceTextBlock.Text = "계산 후 잔액 " + string.Format("{0}", (beforeBalance + amount).ToString("#,##0")) + " 원"; }
+            else { AfterBalanceTextBlock.Text = "계산 후 잔액 " + string.Format("{0}", (beforeBalance - amount).ToString("#,##0")) + " 원"; }
+        }
+
+        private void SaveLocalSettings()
+        {
+            App.localSettings.Values["date"] = TransactionDatePicker.Date.ToString();
+            App.localSettings.Values["inOrDec"] = IncOrDecToggleSwitch.IsOn;
+            App.localSettings.Values["accountIndex"] = AccountChooseBox.SelectedIndex;
+            App.localSettings.Values["currencyIndex"] = CurrencyComboBox.SelectedIndex;
+            if (IncOrDecToggleSwitch.IsOn) { App.localSettings.Values["plusTtypeIndex"] = TransactionTypeComboBox.SelectedIndex; }
+            else { App.localSettings.Values["minusTypeIndex"] = TransactionTypeComboBox.SelectedIndex; }
         }
 
         private async void MessageBoxOpen(string showString)
