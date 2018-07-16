@@ -16,6 +16,9 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using PersonalAccountBookUWP.Controller;
 using Windows.UI.Popups;
+using Windows.Foundation.Metadata;
+using Windows.UI;
+using Windows.UI.ViewManagement;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x412에 나와 있습니다.
 
@@ -29,6 +32,23 @@ namespace PersonalAccountBookUWP
         public MainPage()
         {
             this.InitializeComponent();
+
+            // 초기 작업
+            // 뒤로가기 버튼 추가 (Desktop에서만)
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+
+            // Mobile에서 Status Bar 색 변경
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                var statusBar = StatusBar.GetForCurrentView();
+
+                if (statusBar != null)
+                {
+                    statusBar.BackgroundOpacity = 1;
+                    statusBar.BackgroundColor = Colors.White;
+                    statusBar.ForegroundColor = Colors.Black;
+                }
+            }
 
             App.titleStack.Push("홈");
             MainSplitViewContent.Navigate(typeof(AddPage));

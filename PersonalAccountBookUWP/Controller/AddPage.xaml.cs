@@ -335,6 +335,10 @@ namespace PersonalAccountBookUWP.Controller
                 BitmapImage loadedImage = new BitmapImage();
                 loadedImage = await LoadImage(file);
                 ReceiptImage.Source = loadedImage;
+
+                // 자세히 보기 버튼과 지우기 버튼을 보이게 한다.
+                ShowDetailImageButton.Visibility = Visibility.Visible;
+                ClearImageButton.Visibility = Visibility.Visible;
             }
         }
 
@@ -442,6 +446,26 @@ namespace PersonalAccountBookUWP.Controller
         private void DetailSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
             sender.Text = args.SelectedItem.ToString();
+        }
+
+        // 자세히 보기 버튼을 누르면
+        private void ShowDetailImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(DetailImagePage), file);
+        }
+
+        // 이미지 지우기 버튼을 누르면
+        private void ClearImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            // 화면의 이미지를 다시 AddImage로 바꾸고 file을 null처리.
+            Uri defaultImageUri = new Uri("ms-appx:///Assets/AddImage.png");
+            BitmapImage defaultImage = new BitmapImage(defaultImageUri);
+            ReceiptImage.Source = defaultImage;
+            file = null;
+
+            // 자세히 보기 버튼과 지우기 버튼을 사라지게 한다.
+            ShowDetailImageButton.Visibility = Visibility.Collapsed;
+            ClearImageButton.Visibility = Visibility.Collapsed;
         }
 
         // 초기 화면을 구성함

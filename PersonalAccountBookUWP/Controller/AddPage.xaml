@@ -13,7 +13,8 @@
         </Grid.RowDefinitions>
 
         <ScrollViewer Grid.Row="0" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
-            <StackPanel Name="UIStackPanel">
+            <StackPanel Name="UIStackPanel"
+                        Orientation="Vertical">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="60*" />
@@ -128,20 +129,32 @@
                                     SuggestionChosen="CardBookSuggestBox_SuggestionChosen"
                                     HorizontalAlignment="Stretch"/>
                 </Grid>
-
-                <Button Name="ReceiptImageButton"
-                        Margin="10, 10, 10, 10"
-                        Width="100" Height="150"
-                        Click="ReceiptImageButton_ClickAsync"
-                        Padding="0, 0, 0, 0"
-                        Background="White">
-                    <Button.Content>
-                        <Image Name="ReceiptImage"
-                               Source="ms-appx:///Assets/AddImage.png"
-                               HorizontalAlignment="Stretch"
-                               VerticalAlignment="Stretch"/>
-                    </Button.Content>
-                </Button>
+                <StackPanel Name="ImageStackPanel"
+                            Orientation="Horizontal">
+                    <Button Name="ReceiptImageButton"
+                            Margin="10, 10, 10, 10"
+                            Width="100" Height="150"
+                            Click="ReceiptImageButton_ClickAsync"
+                            Padding="0, 0, 0, 0"
+                            Background="White">
+                        <Button.Content>
+                            <Image Name="ReceiptImage"
+                                   Source="ms-appx:///Assets/AddImage.png"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Stretch"/>
+                        </Button.Content>
+                    </Button>
+                    <Button Name="ShowDetailImageButton"
+                            Content="자세히 보기"
+                            Margin="20, -60, 10, 10"
+                            Visibility="Collapsed"
+                            Click="ShowDetailImageButton_Click" />
+                    <Button Name="ClearImageButton"
+                            Content="지우기"
+                            Margin="10, -60, 10, 10"
+                            Visibility="Collapsed"
+                            Click="ClearImageButton_Click" />
+                </StackPanel>
                 <Grid Margin="10,10,10,10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />

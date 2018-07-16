@@ -27,7 +27,7 @@ namespace PersonalAccountBookUWP
         public static XElement MethodElement {
             get => methodElement;
         }
-        
+
         // 응용 프로그램 개체를 초기화한다.
         public App()
         {
