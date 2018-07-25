@@ -12,6 +12,9 @@ using Windows.Storage.Streams;
 using Newtonsoft.Json.Linq;
 using Windows.UI.Popups;
 using System.Collections.ObjectModel;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 
 namespace PersonalAccountBookUWP.Controller
 {
@@ -142,8 +145,8 @@ namespace PersonalAccountBookUWP.Controller
                 return;
             }
 
-            // 검증 2. 내용 부족이 있는지. (빈칸이 하나라도 있으면 안된다. 영수증 이미지 제외)
-            if (AmountTextBox.Text == "" || BankBookSuggestBox.Text == "" || CardBookSuggestBox.Text == "")
+            // 검증 2. 내용 부족이 있는지. (빈칸이 하나라도 있으면 안된다. 영수증 이미지, 카드북 제외)
+            if (AmountTextBox.Text == "" || BankBookSuggestBox.Text == "")
             {
                 MessageBoxOpen("내용이 부족합니다.");
                 return;
@@ -451,7 +454,10 @@ namespace PersonalAccountBookUWP.Controller
         // 자세히 보기 버튼을 누르면
         private void ShowDetailImageButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(DetailImagePage), file);
+            App.titleStack.Push("홈");
+
+            // 그냥 Navigate하고 돌아가면 내용이 전부 없어지니 팝업형식으로 연다.
+            NavigateAsPopup(typeof(DetailImagePage), file);
         }
 
         // 이미지 지우기 버튼을 누르면
@@ -615,11 +621,10 @@ namespace PersonalAccountBookUWP.Controller
         private void LoadBalance()
         {
             var beforeBalance = accountList[AccountChooseBox.SelectedIndex].Balance;
-            var amount = 0;
             // string.Format("{0}", beforeBalance.ToString("#,##0")) 은 천단위로 콤마 찍어주는 코드
             BeforeBalanceTextBlock.Text = "잔액 " + string.Format("{0}", beforeBalance.ToString("#,##0")) + " 원";
-            
-            int.TryParse(AmountTextBox.Text, out amount);
+
+            int.TryParse(AmountTextBox.Text, out int amount);
             if (IncOrDecToggleSwitch.IsOn) { AfterBalanceTextBlock.Text = "계산 후 잔액 " + string.Format("{0}", (beforeBalance + amount).ToString("#,##0")) + " 원"; }
             else { AfterBalanceTextBlock.Text = "계산 후 잔액 " + string.Format("{0}", (beforeBalance - amount).ToString("#,##0")) + " 원"; }
         }
@@ -632,6 +637,23 @@ namespace PersonalAccountBookUWP.Controller
             App.localSettings.Values["currencyIndex"] = CurrencyComboBox.SelectedIndex;
             if (IncOrDecToggleSwitch.IsOn) { App.localSettings.Values["plusTtypeIndex"] = TransactionTypeComboBox.SelectedIndex; }
             else { App.localSettings.Values["minusTypeIndex"] = TransactionTypeComboBox.SelectedIndex; }
+        }
+
+        private async void NavigateAsPopup(Type pageType, object parameter)
+        {
+            CoreApplicationView newView = CoreApplication.CreateNewView();
+            int newViewId = 0;
+            await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                Frame frame = new Frame();
+                frame.Navigate(pageType, parameter);
+                Window.Current.Content = frame;
+                // You have to activate the window in order to show it later.
+                Window.Current.Activate();
+
+                newViewId = ApplicationView.GetForCurrentView().Id;
+            });
+            bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
         }
 
         private async void MessageBoxOpen(string showString)

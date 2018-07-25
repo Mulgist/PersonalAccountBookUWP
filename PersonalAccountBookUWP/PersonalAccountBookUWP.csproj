@@ -95,6 +95,13 @@
     <Compile Include="DetailImagePage.xaml.cs">
       <DependentUpon>DetailImagePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\HistoryListCell.cs" />
+    <Compile Include="HistoryListPage.xaml.cs">
+      <DependentUpon>HistoryListPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HomePage.xaml.cs">
+      <DependentUpon>HomePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Services\DataService.cs" />
     <Compile Include="Model\Account.cs" />
     <Compile Include="App.xaml.cs">
@@ -145,6 +152,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="DetailImagePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HistoryListPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HomePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

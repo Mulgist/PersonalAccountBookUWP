@@ -2,8 +2,10 @@
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
@@ -51,6 +53,29 @@ namespace PersonalAccountBookUWP
             BitmapImage loadedImage = new BitmapImage();
             loadedImage = await LoadImage(file);
             DetailedImage.Source = loadedImage;
+        }
+
+        // 더블클릭하면 확대됨
+        private async void ScrollViewer_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var scrollViewer = sender as ScrollViewer;
+            var doubleTapPoint = e.GetPosition(scrollViewer);
+
+            if (scrollViewer.ZoomFactor != 1)
+            {
+                scrollViewer.ChangeView(null, null, 1);
+            }
+            else if (scrollViewer.ZoomFactor == 1)
+            {
+                scrollViewer.ChangeView(null, null, 2);
+
+                var dispatcher = Window.Current.CoreWindow.Dispatcher;
+                await dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
+                {
+                    scrollViewer.ChangeView(doubleTapPoint.X, doubleTapPoint.Y, 2);
+                });
+            }
+
         }
     }
 }

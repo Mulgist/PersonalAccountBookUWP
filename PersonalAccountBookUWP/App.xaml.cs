@@ -45,29 +45,19 @@ namespace PersonalAccountBookUWP
 
             // 기본 세팅 데이터를 초기화한다 (내부 데이터가 없을때)
             if (localSettings.Values["date"] == null)
-            {
                 localSettings.Values["date"] = DateTime.Now.Date.ToString();
-            }
             if (localSettings.Values["inOrDec"] == null)
-            {
                 localSettings.Values["inOrDec"] = true;
-            }
             if (localSettings.Values["accountIndex"] == null)
-            {
                 localSettings.Values["accountIndex"] = 0;
-            }
             if (localSettings.Values["currencyIndex"] == null)
-            {
                 localSettings.Values["currencyIndex"] = 0;
-            }
             if (localSettings.Values["plusTypeIndex"] == null)
-            {
                 localSettings.Values["plusTtypeIndex"] = 0;
-            }
             if (localSettings.Values["minusTypeIndex"] == null)
-            {
                 localSettings.Values["minusTtypeIndex"] = 0;
-            }
+            if (localSettings.Values["IsBackExit"] == null)
+                localSettings.Values["IsBackExit"] = true;
         }
 
         // 최종 사용자가 응용 프로그램을 정상적으로 시작할 때 호출된다. 다른 진입점은 특정 파일을 여는 등 응용 프로그램을 시작할 때

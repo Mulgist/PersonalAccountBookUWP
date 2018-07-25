@@ -55,17 +55,17 @@
                                 </StackPanel>
                             </ListBoxItem>
 
-                            <ListBoxItem Name="NoticeListBoxItem" Height="48px">
+                            <ListBoxItem Name="HistoryListBoxItem" Height="48px">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE129;" Foreground="White" />
-                                    <TextBlock Text="메뉴1" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xECC5;" Foreground="White" />
+                                    <TextBlock Text="히스토리" FontSize="20" Margin="20,0,0,0" Foreground="White" />
                                 </StackPanel>
                             </ListBoxItem>
 
-                            <ListBoxItem Name="PlanListBoxItem" Height="48px">
+                            <ListBoxItem Name="AddBoxItem" Height="48px">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xED28;" Foreground="White"/>
-                                    <TextBlock Text="메뉴2" FontSize="20" Margin="20,0,0,0" Foreground="White"/>
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE109;" Foreground="White"/>
+                                    <TextBlock Text="추가하기" FontSize="20" Margin="20,0,0,0" Foreground="White"/>
                                 </StackPanel>
                             </ListBoxItem>
 

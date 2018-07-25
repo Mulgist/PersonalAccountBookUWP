@@ -19,6 +19,7 @@ using Windows.UI.Popups;
 using Windows.Foundation.Metadata;
 using Windows.UI;
 using Windows.UI.ViewManagement;
+using Windows.ApplicationModel.Core;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x412에 나와 있습니다.
 
@@ -51,7 +52,7 @@ namespace PersonalAccountBookUWP
             }
 
             App.titleStack.Push("홈");
-            MainSplitViewContent.Navigate(typeof(AddPage));
+            MainSplitViewContent.Navigate(typeof(HomePage));
             HomeListBoxItem.IsSelected = false;
 
             SystemNavigationManager.GetForCurrentView().BackRequested += (s, a) =>
@@ -67,16 +68,8 @@ namespace PersonalAccountBookUWP
                 }
                 else
                 {
-                    /*
-                    try
-                    {
-                        if ((bool)(App.localSettings.Values["IsBackExit"]) == true)
-                            CoreApplication.Exit();
-                    }
-                    catch
-                    {
-                        ;
-                    } */
+                    if ((bool)(App.localSettings.Values["IsBackExit"]) == true)
+                        CoreApplication.Exit();
                 }
             };
         }
@@ -89,7 +82,6 @@ namespace PersonalAccountBookUWP
         private void HambergerListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             MainSplitView.IsPaneOpen = false;
-            /*
             if (HomeListBoxItem.IsSelected)
             {
                 App.titleStack.Push("홈");
@@ -97,20 +89,21 @@ namespace PersonalAccountBookUWP
                 (MainSplitView.Content as Frame).Navigate(typeof(HomePage));
                 return;
             }
-            if (NoticeListBoxItem.IsSelected)
+            if (HistoryListBoxItem.IsSelected)
             {
-                App.titleStack.Push("공지사항");
+                App.titleStack.Push("히스토리");
                 Title.Text = App.titleStack.Peek();
-                (MainSplitView.Content as Frame).Navigate(typeof(DocumentsListPage), "164");
+                (MainSplitView.Content as Frame).Navigate(typeof(HistoryListPage));
                 return;
             }
-            if (PlanListBoxItem.IsSelected)
+            if (AddBoxItem.IsSelected)
             {
-                App.titleStack.Push("일정");
+                App.titleStack.Push("추가하기");
                 Title.Text = App.titleStack.Peek();
-                (MainSplitView.Content as Frame).Navigate(typeof(PlanPage));
+                (MainSplitView.Content as Frame).Navigate(typeof(AddPage));
                 return;
             }
+            /*
             if (SeminarListBoxItem.IsSelected)
             {
                 App.titleStack.Push("세미나");

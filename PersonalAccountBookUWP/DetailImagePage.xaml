@@ -10,8 +10,14 @@
     Loaded="Page_LoadedAsync">
 
     <Grid Background="Black">
-        <Image Name="DetailedImage"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"/>
+        <ScrollViewer Name="ScrollViewer" 
+                      MinZoomFactor="1" 
+                      DoubleTapped="ScrollViewer_DoubleTapped"
+                      ZoomMode="Enabled"
+                      HorizontalScrollBarVisibility="Auto" >
+            <Image Name="DetailedImage" 
+                   HorizontalAlignment="Stretch" 
+                   VerticalAlignment="Stretch"/>
+        </ScrollViewer>
     </Grid>
 </Page>
