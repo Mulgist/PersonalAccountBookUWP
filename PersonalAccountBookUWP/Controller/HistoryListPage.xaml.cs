@@ -86,7 +86,8 @@ namespace PersonalAccountBookUWP
 
         private void HistoryList_ItemClick(object sender, ItemClickEventArgs e)
         {
-
+            App.titleStack.Push("히스토리 자세히 보기");
+            this.Frame.Navigate(typeof(HistoryViewPage), e.ClickedItem as HistoryListCell);
         }
 
 

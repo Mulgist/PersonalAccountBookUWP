@@ -92,14 +92,17 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DetailImagePage.xaml.cs">
+    <Compile Include="Controller\DetailImagePage.xaml.cs">
       <DependentUpon>DetailImagePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controller\HistoryViewPage.xaml.cs">
+      <DependentUpon>HistoryViewPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\HistoryListCell.cs" />
-    <Compile Include="HistoryListPage.xaml.cs">
+    <Compile Include="Controller\HistoryListPage.xaml.cs">
       <DependentUpon>HistoryListPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="HomePage.xaml.cs">
+    <Compile Include="Controller\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\DataService.cs" />
@@ -151,15 +154,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="DetailImagePage.xaml">
+    <Page Include="Controller\DetailImagePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="HistoryListPage.xaml">
+    <Page Include="Controller\HistoryListPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="HomePage.xaml">
+    <Page Include="Controller\HomePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controller\HistoryViewPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
