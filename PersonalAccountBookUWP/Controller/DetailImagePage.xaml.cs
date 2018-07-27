@@ -28,6 +28,7 @@ namespace PersonalAccountBookUWP
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
             file = e.Parameter as StorageFile;
 
             // file로 이미지 로드

@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.Web.Http;
 
 namespace PersonalAccountBookUWP
@@ -93,6 +94,44 @@ namespace PersonalAccountBookUWP
             };
             request.Content = multipart;
             response = await restful.SendRequestAsync(request);
+        }
+
+        public async Task<BitmapImage> DownloadImageAsync(string filename)
+        {
+            BitmapImage bitmapImage = new BitmapImage();
+            // .jpg로 시도
+            var uri = new Uri(App.DownloadUrl + filename + ".jpg");
+            restful = new HttpClient();
+            IBuffer buffer = null;
+            try
+            {
+                // 파일이 없으면 Exception 발생
+                buffer = Task.Run(async () => { return await restful.GetBufferAsync(uri); }).Result;
+            }
+            catch (Exception)
+            {
+                // .png로 재시도
+                uri = new Uri(App.DownloadUrl + filename + ".png");
+                restful = new HttpClient();
+
+                try
+                {
+                    buffer = Task.Run(async () => { return await restful.GetBufferAsync(uri); }).Result;
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
+
+            InMemoryRandomAccessStream randomAccessStream = new InMemoryRandomAccessStream();
+            DataWriter writer = new DataWriter(randomAccessStream.GetOutputStreamAt(0));
+            writer.WriteBuffer(buffer);
+            await writer.StoreAsync();
+
+            bitmapImage.SetSource(randomAccessStream);
+
+            return bitmapImage;
         }
     }
 }

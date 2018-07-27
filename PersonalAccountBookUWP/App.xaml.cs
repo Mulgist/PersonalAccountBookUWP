@@ -18,6 +18,8 @@ namespace PersonalAccountBookUWP
         public static string RestfulUrl { get => restfulUrl; }
         private static string uploadUrl = "";
         public static string UploadUrl { get => uploadUrl; }
+        private static string downloadUrl = "";
+        public static string DownloadUrl { get => downloadUrl; }
 
         // 로컬 앱 세팅 데이터 폴더 검색
         public static ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
@@ -42,6 +44,7 @@ namespace PersonalAccountBookUWP
 
             restfulUrl = (string)databaseElement.Element("URL");
             uploadUrl = (string)databaseElement.Element("UploadURL");
+            downloadUrl = (string)databaseElement.Element("ReceiptURLPrefix");
 
             // 기본 세팅 데이터를 초기화한다 (내부 데이터가 없을때)
             if (localSettings.Values["date"] == null)

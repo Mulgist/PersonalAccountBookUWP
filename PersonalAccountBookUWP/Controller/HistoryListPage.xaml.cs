@@ -25,12 +25,7 @@ namespace PersonalAccountBookUWP
     {
         // historycell 리스트
         private List<HistoryListCell> historyCells = new List<HistoryListCell>();
-
-        // 요청할 때 사용하는 자료구조
-        private Dictionary<string, string> requestDic = new Dictionary<string, string>();
-        // DB에 요청, 응답받을 때 필요한 것들
-        private JArray objects;
-
+        
         public HistoryListPage()
         {
             InitializeComponent();
@@ -86,6 +81,7 @@ namespace PersonalAccountBookUWP
 
         private void HistoryList_ItemClick(object sender, ItemClickEventArgs e)
         {
+            // titleStack에 Push해도 상위 Page인 MainPage는 바뀌지 않는다.
             App.titleStack.Push("히스토리 자세히 보기");
             this.Frame.Navigate(typeof(HistoryViewPage), e.ClickedItem as HistoryListCell);
         }
@@ -98,9 +94,12 @@ namespace PersonalAccountBookUWP
             var bookString = "";
             var amountString = "";
 
-            // JArray 초기화
-            objects = null;
+            // 요청할 때 사용하는 자료구조
+            Dictionary<string, string> requestDic = new Dictionary<string, string>();
 
+            // DB에 요청, 응답받을 때 필요한 것들
+            JArray objects = null;
+            
             // History List 받기
             requestDic.Clear();
             requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("getHistoryList"));
@@ -125,7 +124,7 @@ namespace PersonalAccountBookUWP
                 {
                     amountString = "- \\ " + (Convert.ToInt32(element["amount"]) * -1).ToString("#,##0");
                 } 
-                list.Add(new HistoryListCell(element["id"].ToString(), accountString, element["typename"].ToString(), bookString, "1,000", amountString, element["transactiondate"].ToString()));
+                list.Add(new HistoryListCell(element["id"].ToString(), accountString, element["typename"].ToString(), bookString, element["bankbook"].ToString(), element["cardbook"].ToString(), "1,000", amountString, element["transactiondate"].ToString()));
             }
 
             return list;

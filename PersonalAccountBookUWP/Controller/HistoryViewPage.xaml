@@ -78,7 +78,8 @@
                            Margin="20,5,10,10"
                            FontSize="18"/>
 
-                <MenuFlyoutSeparator Height="5" 
+                <MenuFlyoutSeparator Name="CardbookLine"
+                                     Height="5" 
                                      Padding="0,0,0,0" 
                                      Background="Black" 
                                      Opacity="0.6" />
@@ -101,7 +102,8 @@
                            FontSize="16"/>
                 <ListView Name="DetailHistoryList"
                           Margin="10,10,10,10"
-                          ScrollViewer.VerticalScrollMode="Disabled" >
+                          ScrollViewer.VerticalScrollMode="Disabled"
+                          IsItemClickEnabled="False" >
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment"
@@ -110,25 +112,28 @@
                     </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Grid Margin="1,5">
+                            <Grid Margin="1,1,1,1">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="200" />
-                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="300" />
+                                    <ColumnDefinition Width="80" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Grid.Column="0"
                                            HorizontalAlignment="Left"
-                                           Text="거래물품"/>
+                                           FontSize="16"
+                                           Text="{Binding Name}"/>
                                 <TextBlock Grid.Column="1"
                                            HorizontalAlignment="Right"
-                                           Text="- \ 1,500"/>
+                                           FontSize="16"
+                                           Text="{Binding Price}"/>
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
 
-                <MenuFlyoutSeparator Height="5" 
+                <MenuFlyoutSeparator Name="ReceiptLine"
+                                     Height="5" 
                                      Padding="0,0,0,0" 
                                      Background="Black" 
                                      Opacity="0.6" />
@@ -143,6 +148,11 @@
                             Click="ReceiptImageButton_Click"
                             Padding="0, 0, 0, 0"
                             Background="Black">
+                    <Button.Content>
+                        <Image Name="ReceiptImage"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Stretch"/>
+                    </Button.Content>
                 </Button>
                 
             </StackPanel>
