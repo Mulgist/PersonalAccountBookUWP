@@ -35,7 +35,7 @@
                 <TextBlock Name="AccountTextBlock" 
                            Text="예제은행 일반입출금통장 110-111-3344553"
                            Margin="20,5,10,10"
-                           FontSize="18"/>
+                           FontSize="14"/>
 
                 <MenuFlyoutSeparator Height="5" 
                                      Padding="0,0,0,0" 
@@ -114,7 +114,7 @@
                         <DataTemplate>
                             <Grid Margin="1,1,1,1">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="300" />
+                                    <ColumnDefinition Width="220" />
                                     <ColumnDefinition Width="80" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>

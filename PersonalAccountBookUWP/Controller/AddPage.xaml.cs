@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Diagnostics;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.Storage;
@@ -22,6 +21,7 @@ namespace PersonalAccountBookUWP.Controller
     {
         private List<Grid> detailGridArray = new List<Grid>();
         private StorageFile file;
+        private BitmapImage loadedImage;
 
         // 요청할 때 사용하는 자료구조
         private Dictionary<string, string> requestDic = new Dictionary<string, string>();
@@ -81,6 +81,30 @@ namespace PersonalAccountBookUWP.Controller
             await FilePickAsync();
         }
 
+        // 자세히 보기 버튼을 누르면
+        private void ShowDetailImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            // App.titleStack.Push("홈");
+
+            // 그냥 Navigate하고 돌아가면 내용이 전부 없어지니 팝업형식으로 연다.
+            Utility.instance.NavigateAsPopup(typeof(DetailImagePage), file);
+        }
+
+        // 이미지 지우기 버튼을 누르면
+        private void ClearImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            // 화면의 이미지를 다시 AddImage로 바꾸고 file을 null처리.
+            Uri defaultImageUri = new Uri("ms-appx:///Assets/AddImage.png");
+            BitmapImage defaultImage = new BitmapImage(defaultImageUri);
+            ReceiptImage.Source = defaultImage;
+            file = null;
+            loadedImage = null;
+
+            // 자세히 보기 버튼과 지우기 버튼을 사라지게 한다.
+            ShowDetailImageButton.Visibility = Visibility.Collapsed;
+            ClearImageButton.Visibility = Visibility.Collapsed;
+        }
+
         // 세부 내역 관련 기능
         private void AddDetailButton_Click(object sender, RoutedEventArgs e)
         {
@@ -88,6 +112,7 @@ namespace PersonalAccountBookUWP.Controller
             UIStackPanel.Children.Add(detailGridArray.Last());
         }
 
+        // 세부 내역 제거 버튼을 눌렀을 때
         private void RemoveDetailButton_Click(object sender, RoutedEventArgs e)
         {
             if (detailGridArray.Count > 0)
@@ -141,14 +166,14 @@ namespace PersonalAccountBookUWP.Controller
             // 검증 1. 세부 내역 항목이 하나도 없는지
             if (detailGridArray.Count == 0)
             {
-                MessageBoxOpen("세부 내역에 내용을 작성해주세요.");
+                Utility.instance.MessageBoxOpen("세부 내역에 내용을 작성해주세요.");
                 return;
             }
 
             // 검증 2. 내용 부족이 있는지. (빈칸이 하나라도 있으면 안된다. 영수증 이미지, 카드북 제외)
             if (AmountTextBox.Text == "" || BankBookSuggestBox.Text == "")
             {
-                MessageBoxOpen("내용이 부족합니다.");
+                Utility.instance.MessageBoxOpen("내용이 부족합니다.");
                 return;
             }
 
@@ -157,7 +182,7 @@ namespace PersonalAccountBookUWP.Controller
                 if (detail.Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 0).First().Text == "" ||
                     detail.Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 1).First().Text == "")
                 {
-                    MessageBoxOpen("내용이 부족합니다.");
+                    Utility.instance.MessageBoxOpen("내용이 부족합니다.");
                     return;
                 }
             }
@@ -166,7 +191,7 @@ namespace PersonalAccountBookUWP.Controller
             if (!int.TryParse(AmountTextBox.Text, out int tempInt))
             {
                 // 거래금액이 숫자가 아니면 메시지처리하고 return함
-                MessageBoxOpen("금액에 숫자만 적어주세요.");
+                Utility.instance.MessageBoxOpen("금액에 숫자만 적어주세요.");
                 return;
             }
 
@@ -175,7 +200,7 @@ namespace PersonalAccountBookUWP.Controller
                 canConvert = int.TryParse(detail.Children.Cast<AutoSuggestBox>().Where(j => Grid.GetColumn(j) == 1).First().Text, out tempInt);
                 if (!canConvert)
                 {
-                    MessageBoxOpen("금액에 숫자만 적어주세요.");
+                    Utility.instance.MessageBoxOpen("금액에 숫자만 적어주세요.");
                     return;
                 }
             }
@@ -189,7 +214,7 @@ namespace PersonalAccountBookUWP.Controller
 
             if (int.Parse(AmountTextBox.Text) != costSum)
             {
-                MessageBoxOpen("세부 내역 금액의 합계가 거래 금액과 같지 않습니다.");
+                Utility.instance.MessageBoxOpen("세부 내역 금액의 합계가 거래 금액과 같지 않습니다.");
                 return;
             }
 
@@ -248,7 +273,7 @@ namespace PersonalAccountBookUWP.Controller
 
             if (result == "fail")
             {
-                MessageBoxOpen("저장에 실패했습니다.");
+                Utility.instance.MessageBoxOpen("저장에 실패했습니다.");
                 return;
             }
 
@@ -273,7 +298,7 @@ namespace PersonalAccountBookUWP.Controller
 
                 if (result == "fail")
                 {
-                    MessageBoxOpen("세부정보 저장에 실패했습니다.");
+                    Utility.instance.MessageBoxOpen("세부정보 저장에 실패했습니다.");
                     return;
                 }
             }
@@ -308,11 +333,11 @@ namespace PersonalAccountBookUWP.Controller
 
             if (result == "fail")
             {
-                MessageBoxOpen("계좌정보 업데이트에 실패했습니다.");
+                Utility.instance.MessageBoxOpen("계좌정보 업데이트에 실패했습니다.");
                 return;
             }
 
-            MessageBoxOpen("저장을 완료했습니다.");
+            Utility.instance.MessageBoxOpen("저장을 완료했습니다.");
 
             SaveLocalSettings();
             ResetPage();
@@ -335,24 +360,13 @@ namespace PersonalAccountBookUWP.Controller
             {
                 // 파일 로드됨. 버튼 이미지를 바꿈
                 // FilePathText.Text = file.Path;
-                BitmapImage loadedImage = new BitmapImage();
-                loadedImage = await LoadImage(file);
+                loadedImage = await Utility.instance.LoadImage(file);
                 ReceiptImage.Source = loadedImage;
 
                 // 자세히 보기 버튼과 지우기 버튼을 보이게 한다.
                 ShowDetailImageButton.Visibility = Visibility.Visible;
                 ClearImageButton.Visibility = Visibility.Visible;
             }
-        }
-
-        // StorageFile to BitmapImage
-        private static async Task<BitmapImage> LoadImage(StorageFile file)
-        {
-            BitmapImage bitmapImage = new BitmapImage();
-            FileRandomAccessStream stream = (FileRandomAccessStream)await file.OpenAsync(FileAccessMode.Read);
-            bitmapImage.SetSource(stream);
-
-            return bitmapImage;
         }
 
         // 거래 대상에 글자를 입력할때마다
@@ -449,29 +463,6 @@ namespace PersonalAccountBookUWP.Controller
         private void DetailSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
             sender.Text = args.SelectedItem.ToString();
-        }
-
-        // 자세히 보기 버튼을 누르면
-        private void ShowDetailImageButton_Click(object sender, RoutedEventArgs e)
-        {
-            App.titleStack.Push("홈");
-
-            // 그냥 Navigate하고 돌아가면 내용이 전부 없어지니 팝업형식으로 연다.
-            NavigateAsPopup(typeof(DetailImagePage), file);
-        }
-
-        // 이미지 지우기 버튼을 누르면
-        private void ClearImageButton_Click(object sender, RoutedEventArgs e)
-        {
-            // 화면의 이미지를 다시 AddImage로 바꾸고 file을 null처리.
-            Uri defaultImageUri = new Uri("ms-appx:///Assets/AddImage.png");
-            BitmapImage defaultImage = new BitmapImage(defaultImageUri);
-            ReceiptImage.Source = defaultImage;
-            file = null;
-
-            // 자세히 보기 버튼과 지우기 버튼을 사라지게 한다.
-            ShowDetailImageButton.Visibility = Visibility.Collapsed;
-            ClearImageButton.Visibility = Visibility.Collapsed;
         }
 
         // 초기 화면을 구성함
@@ -606,7 +597,10 @@ namespace PersonalAccountBookUWP.Controller
             BankBookSuggestBox.Text = "";
             CardBookSuggestBox.Text = "";
             file = null;
+            loadedImage = null;
             ReceiptImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/AddImage.png", UriKind.Absolute));
+            ShowDetailImageButton.Visibility = Visibility.Collapsed;
+            ClearImageButton.Visibility = Visibility.Collapsed;
             AmountTextBlock.Text = "합계";
             for (int i = detailGridArray.Count - 1; i >= 0; i--)
             {
@@ -637,29 +631,6 @@ namespace PersonalAccountBookUWP.Controller
             App.localSettings.Values["currencyIndex"] = CurrencyComboBox.SelectedIndex;
             if (IncOrDecToggleSwitch.IsOn) { App.localSettings.Values["plusTtypeIndex"] = TransactionTypeComboBox.SelectedIndex; }
             else { App.localSettings.Values["minusTypeIndex"] = TransactionTypeComboBox.SelectedIndex; }
-        }
-
-        private async void NavigateAsPopup(Type pageType, object parameter)
-        {
-            CoreApplicationView newView = CoreApplication.CreateNewView();
-            int newViewId = 0;
-            await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                Frame frame = new Frame();
-                frame.Navigate(pageType, parameter);
-                Window.Current.Content = frame;
-                // You have to activate the window in order to show it later.
-                Window.Current.Activate();
-
-                newViewId = ApplicationView.GetForCurrentView().Id;
-            });
-            bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
-        }
-
-        private async void MessageBoxOpen(string showString)
-        {
-            var dialog = new MessageDialog(showString);
-            await dialog.ShowAsync();
         }
     }
 }

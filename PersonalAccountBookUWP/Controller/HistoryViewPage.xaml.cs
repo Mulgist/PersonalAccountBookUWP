@@ -5,9 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
+using Windows.Storage.Streams;
+using Windows.UI.Core;
 using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -96,11 +101,15 @@ namespace PersonalAccountBookUWP
 
         }
 
+        // 영수증 이미지를 클릭했을 때
         private void ReceiptImageButton_Click(object sender, RoutedEventArgs e)
         {
-
+            // 그냥 Navigate하고 돌아가면 내용이 전부 없어지니 팝업형식으로 연다.
+            // 오류 발생으로 보류
+            // Utility.instance.NavigateAsPopup(typeof(DetailImagePage), image);
         }
 
+        // 페이지에 표시할 자세한 정보를 가져온다.
         private List<DetailHistory> GetDetailHistories(string historyId)
         {
             var list = new List<DetailHistory>();
@@ -124,10 +133,22 @@ namespace PersonalAccountBookUWP
             return list;
         }
 
-        private async void MessageBoxOpen(string showString)
+        public static BitmapImage BytesToImage(byte[] bytes)
         {
-            var dialog = new MessageDialog(showString);
-            await dialog.ShowAsync();
+            BitmapImage bitmapImage = new BitmapImage();
+            try
+            {
+                using (IRandomAccessStream ms = new InMemoryRandomAccessStream())
+                {
+                    DataWriter writer = new DataWriter(ms.GetOutputStreamAt(0));
+
+                    bitmapImage.SetSource(ms);
+                    return bitmapImage;
+                }
+            }
+            finally { bitmapImage = null; }
         }
+
+
     }
 }

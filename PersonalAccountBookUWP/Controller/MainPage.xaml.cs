@@ -205,11 +205,5 @@ namespace PersonalAccountBookUWP
             (MainSplitView.Content as Frame).Navigate(typeof(SettingPage));
             */
         }
-
-        private async void MessageBoxOpen(string showString)
-        {
-            var dialog = new MessageDialog(showString);
-            await dialog.ShowAsync();
-        }
     }
 }

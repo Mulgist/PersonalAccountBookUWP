@@ -108,6 +108,12 @@ namespace PersonalAccountBookUWP
             foreach (JObject element in objects)
             {
                 accountString = element["bank"].ToString() + " " + element["accountname"].ToString() + " " + element["number"].ToString();
+                // 현금같은 경우는 은행이 없어 첫 문자가 띄어쓰기이다. 이것을 제거해준다.
+                if (accountString.IndexOf(' ') == 0)
+                {
+                    accountString = accountString.Substring(1);
+                }
+
                 if (element["cardbook"].ToString() == "")
                 {
                     bookString = element["bankbook"].ToString();
@@ -116,6 +122,7 @@ namespace PersonalAccountBookUWP
                 {
                     bookString = element["cardbook"].ToString();
                 }
+
                 if (Convert.ToInt32(element["amount"]) >= 0)
                 {
                     amountString = "\\ " + Convert.ToInt32(element["amount"]).ToString("#,##0");

@@ -18,7 +18,7 @@ namespace PersonalAccountBookUWP
     /// </summary>
     public sealed partial class DetailImagePage : Page
     {
-        private StorageFile file = null;
+        private StorageFile file;
 
         public DetailImagePage()
         {
@@ -29,30 +29,18 @@ namespace PersonalAccountBookUWP
         {
             base.OnNavigatedTo(e);
 
+            
             file = e.Parameter as StorageFile;
-
-            // file로 이미지 로드
-            BitmapImage loadedImage = new BitmapImage();
 
             // 비동기를 동기 위에서 돌리기 (데드락 주의)
             // loadedImage = Task.Run(async () => { return await LoadImage(file); }).Result;
-        }
-
-        // StorageFile to BitmapImage
-        private static async Task<BitmapImage> LoadImage(StorageFile file)
-        {
-            BitmapImage bitmapImage = new BitmapImage();
-            FileRandomAccessStream stream = (FileRandomAccessStream)await file.OpenAsync(FileAccessMode.Read);
-            bitmapImage.SetSource(stream);
-
-            return bitmapImage;
         }
 
         private async void Page_LoadedAsync(object sender, RoutedEventArgs e)
         {
             // 이미지 로드하기
             BitmapImage loadedImage = new BitmapImage();
-            loadedImage = await LoadImage(file);
+            loadedImage = await Utility.instance.LoadImage(file);
             DetailedImage.Source = loadedImage;
         }
 

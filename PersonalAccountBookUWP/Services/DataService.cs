@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -94,12 +95,14 @@ namespace PersonalAccountBookUWP
             };
             request.Content = multipart;
             response = await restful.SendRequestAsync(request);
+
+            Debug.WriteLine(response.Content.ReadAsStringAsync().GetResults());
         }
 
         public async Task<BitmapImage> DownloadImageAsync(string filename)
         {
             BitmapImage bitmapImage = new BitmapImage();
-            // .jpg로 시도
+            // .jpg로 1차 시도
             var uri = new Uri(App.DownloadUrl + filename + ".jpg");
             restful = new HttpClient();
             IBuffer buffer = null;
@@ -110,8 +113,8 @@ namespace PersonalAccountBookUWP
             }
             catch (Exception)
             {
-                // .png로 재시도
-                uri = new Uri(App.DownloadUrl + filename + ".png");
+                // .PNG로 2차 시도
+                uri = new Uri(App.DownloadUrl + filename + ".PNG");
                 restful = new HttpClient();
 
                 try
@@ -120,10 +123,22 @@ namespace PersonalAccountBookUWP
                 }
                 catch (Exception)
                 {
-                    return null;
+                    // .png로 3차 시도
+                    uri = new Uri(App.DownloadUrl + filename + ".png");
+                    restful = new HttpClient();
+
+                    try
+                    {
+                        buffer = Task.Run(async () => { return await restful.GetBufferAsync(uri); }).Result;
+                    }
+                    catch (Exception)
+                    {
+                        return null;
+                    }
                 }
             }
 
+            // IBuffer를 BitmapImage로
             InMemoryRandomAccessStream randomAccessStream = new InMemoryRandomAccessStream();
             DataWriter writer = new DataWriter(randomAccessStream.GetOutputStreamAt(0));
             writer.WriteBuffer(buffer);
