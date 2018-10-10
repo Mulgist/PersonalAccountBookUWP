@@ -38,7 +38,44 @@ namespace PersonalAccountBookUWP
             historyCells = getHistories();
         }
 
-        // 하단 버튼 클릭시
+        // 기간 열기 및 닫기 버튼 클릭 시
+        private void PeriodButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (PeriodButtonsGrid.Visibility == Visibility.Collapsed)
+            {
+                PeriodButtonsGrid.Visibility = Visibility.Visible;
+                PeriodButton.Content = "기간 닫기";
+            }
+            else
+            {
+                PeriodButtonsGrid.Visibility = Visibility.Collapsed;
+                PeriodButton.Content = "기간 열기";
+            }
+        }
+
+        // 1일, 1주 등 기간 버튼들 클릭 시
+        private void PeriodButtons_Click(object sender, RoutedEventArgs e)
+        {
+            EndDatePicker.Date = DateTime.Today;
+            if ((Button)sender == OneDayButton)
+            {
+                StartDatePicker.Date = DateTime.Today.AddDays(-1);
+            }
+            else if ((Button)sender == OneWeekButton)
+            {
+                StartDatePicker.Date = DateTime.Today.AddDays(-7);
+            }
+            else if ((Button)sender == OneMonthButton)
+            {
+                StartDatePicker.Date = DateTime.Today.AddMonths(-1);
+            }
+            else if ((Button)sender == OneYearButton)
+            {
+                StartDatePicker.Date = DateTime.Today.AddYears(-1);
+            }
+        }
+
+        // 하단 버튼 클릭 시
         private void CommandButton_Click(object sender, RoutedEventArgs e)
         {
             if ((AppBarButton)sender == AddButton)
@@ -102,7 +139,7 @@ namespace PersonalAccountBookUWP
             
             // History List 받기
             requestDic.Clear();
-            requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("getHistoryList"));
+            requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("getRecentHistoryList"));
             objects = DataService.instance.GetJsonArrayFromDB(requestDic);
 
             foreach (JObject element in objects)

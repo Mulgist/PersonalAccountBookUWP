@@ -231,7 +231,7 @@ namespace PersonalAccountBookUWP.Controller
             date = date.Substring(0, blankIndex);
 
             requestDic.Clear();
-            requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("findRecentHistory"));
+            requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("findRecentHistoryId"));
             requestDic.Add((string)App.MethodElement.Element("day"), date);
             objects = DataService.instance.GetJsonArrayFromDB(requestDic);
             

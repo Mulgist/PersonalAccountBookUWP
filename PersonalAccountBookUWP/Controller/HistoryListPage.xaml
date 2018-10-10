@@ -10,10 +10,84 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ListView Grid.Row="0"
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="30*"/>
+                <ColumnDefinition Width="10*"/>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="10*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Column="0"
+                     Name="SearchTextBox"
+                     Margin="5,8,5,8"
+                     PlaceholderText="검색어 입력"/>
+            <Button Grid.Column="1"
+                    HorizontalAlignment="Stretch"
+                    Name="PeriodButton"
+                    Margin="5,5,5,5"
+                    Content="기간 열기"
+                    Click="PeriodButton_Click"/>
+            <CalendarDatePicker Grid.Column="2" 
+                                Name="StartDatePicker" 
+                                HorizontalAlignment="Stretch"
+                                Margin="5,5,5,5" />
+            <CalendarDatePicker Grid.Column="3" 
+                                Name="EndDatePicker" 
+                                HorizontalAlignment="Stretch"
+                                Margin="5,5,5,5" />
+            <Button Grid.Column="4"
+                    HorizontalAlignment="Stretch"
+                    Name="SearchButton"
+                    Margin="5,5,5,5"
+                    Content="검색"/>
+        </Grid>
+
+        <Grid Grid.Row="1"
+              Name="PeriodButtonsGrid"
+              Padding="0,0,0,5"
+              Visibility="Collapsed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="25*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    HorizontalAlignment="Stretch"
+                    Name="OneDayButton"
+                    Margin="15,5,15,5"
+                    Content="1일"
+                    Click="PeriodButtons_Click"/>
+            <Button Grid.Column="1"
+                    HorizontalAlignment="Stretch"
+                    Name="OneWeekButton"
+                    Margin="15,5,15,5"
+                    Content="1주"
+                    Click="PeriodButtons_Click"/>
+            <Button Grid.Column="2"
+                    HorizontalAlignment="Stretch"
+                    Name="OneMonthButton"
+                    Margin="15,5,15,5"
+                    Content="1개월"
+                    Click="PeriodButtons_Click"/>
+            <Button Grid.Column="3"
+                    HorizontalAlignment="Stretch"
+                    Name="OneYearButton"
+                    Margin="15,5,15,5"
+                    Content="1년"
+                    Click="PeriodButtons_Click"/>
+        </Grid>
+
+        <ListView Grid.Row="2"
                   Name="HistoryList"
                   ScrollViewer.VerticalScrollMode="Enabled"
                   ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -92,7 +166,7 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <CommandBar Grid.Row="1">
+        <CommandBar Grid.Row="3">
             <AppBarButton Name="AddButton"
                           Label="추가"
                           Click="CommandButton_Click">
