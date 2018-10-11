@@ -35,7 +35,7 @@ namespace PersonalAccountBookUWP
 
         private void ViewDidAppear()
         {
-            historyCells = getHistories();
+            historyCells = getHistories(false, null);
         }
 
         // 기간 열기 및 닫기 버튼 클릭 시
@@ -73,6 +73,42 @@ namespace PersonalAccountBookUWP
             {
                 StartDatePicker.Date = DateTime.Today.AddYears(-1);
             }
+        }
+
+        // 검색 버튼 클릭 시
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            // 요청할 때 사용하는 자료
+            Dictionary<string, string> requestDic = new Dictionary<string, string>();
+
+            var searchWord = SearchTextBox.Text;
+            var startDayString = StartDatePicker.Date.ToString();
+            var endDayString = EndDatePicker.Date.ToString();
+
+            requestDic.Clear();
+            requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("getSearchHistoryList"));
+            
+            if (searchWord != "")
+            {
+                requestDic.Add((string)App.MethodElement.Element("searchWord"), searchWord);
+            }
+            if (startDayString != "")
+            {
+                var blankIndex = startDayString.IndexOf(' ');
+                startDayString = startDayString.Substring(0, blankIndex); // ex. "2018-02-11"
+                requestDic.Add((string)App.MethodElement.Element("startDay"), startDayString);
+            }
+            if (endDayString != "")
+            {
+                var blankIndex = endDayString.IndexOf(' ');
+                endDayString = endDayString.Substring(0, blankIndex); // ex. "2018-02-11"
+                requestDic.Add((string)App.MethodElement.Element("endDay"), endDayString);
+            }
+
+            historyCells = getHistories(true, requestDic);
+
+            // 검색 결과 화면에 적용
+            HistoryList.ItemsSource = historyCells;
         }
 
         // 하단 버튼 클릭 시
@@ -124,24 +160,33 @@ namespace PersonalAccountBookUWP
         }
 
 
-        private List<HistoryListCell> getHistories()
+        private List<HistoryListCell> getHistories(bool option, Dictionary<string, string> perRequestDic)
         {
             var list = new List<HistoryListCell>();
             var accountString = "";
             var bookString = "";
             var amountString = "";
 
-            // 요청할 때 사용하는 자료구조
-            Dictionary<string, string> requestDic = new Dictionary<string, string>();
-
             // DB에 요청, 응답받을 때 필요한 것들
             JArray objects = null;
-            
-            // History List 받기
-            requestDic.Clear();
-            requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("getRecentHistoryList"));
-            objects = DataService.instance.GetJsonArrayFromDB(requestDic);
 
+            // 검색해서 조회할 때
+            if (option)
+            {
+                objects = DataService.instance.GetJsonArrayFromDB(perRequestDic);
+            }
+            // 검색아닌 조회할 때 (초반 오픈시)
+            else
+            {
+                // 요청할 때 사용하는 자료구조
+                Dictionary<string, string> requestDic = new Dictionary<string, string>();
+
+                // History List 받기
+                requestDic.Clear();
+                requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("getRecentHistoryList"));
+                objects = DataService.instance.GetJsonArrayFromDB(requestDic);
+            }
+            
             foreach (JObject element in objects)
             {
                 accountString = element["bank"].ToString() + " " + element["accountname"].ToString() + " " + element["number"].ToString();
@@ -173,5 +218,7 @@ namespace PersonalAccountBookUWP
 
             return list;
         }
+
+
     }
 }

@@ -47,7 +47,8 @@
                     HorizontalAlignment="Stretch"
                     Name="SearchButton"
                     Margin="5,5,5,5"
-                    Content="검색"/>
+                    Content="검색"
+                    Click="SearchButton_Click"/>
         </Grid>
 
         <Grid Grid.Row="1"
