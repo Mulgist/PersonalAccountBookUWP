@@ -148,7 +148,7 @@
                             Content="자세히 보기"
                             Margin="20, -60, 10, 10"
                             Visibility="Collapsed"
-                            Click="ShowDetailImageButton_Click" />
+                            Click="ShowDetailImageButton_ClickAsync" />
                     <Button Name="ClearImageButton"
                             Content="지우기"
                             Margin="10, -60, 10, 10"

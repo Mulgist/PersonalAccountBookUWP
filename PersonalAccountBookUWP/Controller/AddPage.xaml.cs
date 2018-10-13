@@ -9,11 +9,7 @@ using Windows.Storage.Pickers;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
 using Newtonsoft.Json.Linq;
-using Windows.UI.Popups;
 using System.Collections.ObjectModel;
-using Windows.ApplicationModel.Core;
-using Windows.UI.Core;
-using Windows.UI.ViewManagement;
 
 namespace PersonalAccountBookUWP.Controller
 {
@@ -82,12 +78,13 @@ namespace PersonalAccountBookUWP.Controller
         }
 
         // 자세히 보기 버튼을 누르면
-        private void ShowDetailImageButton_Click(object sender, RoutedEventArgs e)
+        private async void ShowDetailImageButton_ClickAsync(object sender, RoutedEventArgs e)
         {
-            // App.titleStack.Push("홈");
+            // 파일을 버퍼화시킨다.
+            IBuffer buffer = await FileIO.ReadBufferAsync(file);
 
             // 그냥 Navigate하고 돌아가면 내용이 전부 없어지니 팝업형식으로 연다.
-            Utility.instance.NavigateAsPopup(typeof(DetailImagePage), file);
+            Utility.instance.NavigateAsPopup(typeof(DetailImagePage), buffer);
         }
 
         // 이미지 지우기 버튼을 누르면

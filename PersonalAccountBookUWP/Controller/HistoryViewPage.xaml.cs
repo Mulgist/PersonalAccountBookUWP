@@ -1,24 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Core;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage;
 using Windows.Storage.Streams;
-using Windows.UI.Core;
-using Windows.UI.Popups;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
@@ -33,7 +17,7 @@ namespace PersonalAccountBookUWP
     {
         private HistoryListCell history = null;
         private List<DetailHistory> details = new List<DetailHistory>();
-        private BitmapImage image = null;
+        private IBuffer buffer = null;
 
         public HistoryViewPage()
         {
@@ -76,7 +60,8 @@ namespace PersonalAccountBookUWP
 
 
             // 비동기 처리 필요없었음..
-            image = DataService.instance.DownloadImageAsync(history.HistoryId).Result;
+            buffer = DataService.instance.DownloadImageBuffer(history.HistoryId);
+            BitmapImage image = Utility.instance.BufferToImageAsync(buffer).Result;
 
             if (image != null)
             {
@@ -96,6 +81,7 @@ namespace PersonalAccountBookUWP
 
         }
 
+        // 하단 삭제 버튼을 클릭했을 때
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
 
@@ -106,7 +92,7 @@ namespace PersonalAccountBookUWP
         {
             // 그냥 Navigate하고 돌아가면 내용이 전부 없어지니 팝업형식으로 연다.
             // 오류 발생으로 보류
-            // Utility.instance.NavigateAsPopup(typeof(DetailImagePage), image);
+            Utility.instance.NavigateAsPopup(typeof(DetailImagePage), buffer);
         }
 
         // 페이지에 표시할 자세한 정보를 가져온다.
@@ -148,7 +134,5 @@ namespace PersonalAccountBookUWP
             }
             finally { bitmapImage = null; }
         }
-
-
     }
 }

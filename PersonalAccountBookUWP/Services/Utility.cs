@@ -54,5 +54,19 @@ namespace PersonalAccountBookUWP
 
             return bitmapImage;
         }
+
+        // IBuffer를 BitmapImage로
+        public async Task<BitmapImage> BufferToImageAsync(IBuffer buffer)
+        {
+            BitmapImage bitmapImage = new BitmapImage();
+            InMemoryRandomAccessStream randomAccessStream = new InMemoryRandomAccessStream();
+            DataWriter writer = new DataWriter(randomAccessStream.GetOutputStreamAt(0));
+            writer.WriteBuffer(buffer);
+            await writer.StoreAsync();
+
+            bitmapImage.SetSource(randomAccessStream);
+
+            return bitmapImage;
+        }
     }
 }

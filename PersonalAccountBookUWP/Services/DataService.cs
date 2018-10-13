@@ -2,13 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Net.Http.Headers;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.Web.Http;
 
 namespace PersonalAccountBookUWP
@@ -28,7 +25,6 @@ namespace PersonalAccountBookUWP
             }
 
             var uriString = App.RestfulUrl + "?" + requestString;
-            Debug.WriteLine(uriString);
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri(uriString));
             var response = new HttpResponseMessage();
             try
@@ -56,19 +52,6 @@ namespace PersonalAccountBookUWP
         {
             // StorageFile을 HttpBufferContent로 바꾸는 과정이다. (HttpBufferContent는 IHttpContent와 호환됨)
             byte[] fileBytes = null;
-
-            /*
-            using (IRandomAccessStreamWithContentType stream = Task.Run(async () => { return await image.OpenReadAsync(); }).Result)
-            {
-                fileBytes = new byte[stream.Size];
-                using (DataReader reader = new DataReader(stream))
-                {
-                    var temp = Task.Run(async () => { return await reader.LoadAsync((uint)stream.Size); });
-                    // await reader.LoadAsync((uint)stream.Size);
-                    reader.ReadBytes(fileBytes);
-                }
-            }
-            */
             
             using (IRandomAccessStreamWithContentType stream = await image.OpenReadAsync())
             {
@@ -81,10 +64,6 @@ namespace PersonalAccountBookUWP
             }
 
             IHttpContent content = new HttpBufferContent(fileBytes.AsBuffer());
-            // IBuffer barBuffer = await content.ReadAsBufferAsync();
-            // byte[] bararray = barBuffer.ToArray();
-
-            // var byteArrayContent = new HttpBufferContent(fileBytes); HttpBufferContent()
 
             // 요청을 만들고 보낸다.
             var request = new HttpRequestMessage(HttpMethod.Post, new Uri(App.UploadUrl));
@@ -96,12 +75,12 @@ namespace PersonalAccountBookUWP
             request.Content = multipart;
             response = await restful.SendRequestAsync(request);
 
-            Debug.WriteLine(response.Content.ReadAsStringAsync().GetResults());
+            // 결과 콘솔 출력
+            // Debug.WriteLine(response.Content.ReadAsStringAsync().GetResults());
         }
 
-        public async Task<BitmapImage> DownloadImageAsync(string filename)
+        public IBuffer DownloadImageBuffer(string filename)
         {
-            BitmapImage bitmapImage = new BitmapImage();
             // .jpg로 1차 시도
             var uri = new Uri(App.DownloadUrl + filename + ".jpg");
             restful = new HttpClient();
@@ -138,15 +117,7 @@ namespace PersonalAccountBookUWP
                 }
             }
 
-            // IBuffer를 BitmapImage로
-            InMemoryRandomAccessStream randomAccessStream = new InMemoryRandomAccessStream();
-            DataWriter writer = new DataWriter(randomAccessStream.GetOutputStreamAt(0));
-            writer.WriteBuffer(buffer);
-            await writer.StoreAsync();
-
-            bitmapImage.SetSource(randomAccessStream);
-
-            return bitmapImage;
+            return buffer;
         }
     }
 }
