@@ -1,18 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
+using PersonalAccountBookUWP.Controller;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
 
@@ -107,8 +99,23 @@ namespace PersonalAccountBookUWP
 
             historyCells = getHistories(true, requestDic);
 
-            // 검색 결과 화면에 적용
+            // 검색 결과를 화면에 적용한다.
             HistoryList.ItemsSource = historyCells;
+        }
+
+        // 리스트 아이템 클릭 시
+        private void HistoryList_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            // 일반 모드일 때만(선택 모드 아닐 때) 페이지 이동
+            if (HistoryList.SelectionMode == ListViewSelectionMode.None)
+            {
+                // 부모 페이지에 접근한다.
+                var parent = Utility.instance.FindParent<MainPage>(this);
+                App.titleStack.Push("히스토리 자세히 보기");
+                parent.SetTitle(App.titleStack.Peek());
+
+                Frame.Navigate(typeof(HistoryViewPage), e.ClickedItem as HistoryListCell);
+            }
         }
 
         // 하단 버튼 클릭 시
@@ -116,7 +123,13 @@ namespace PersonalAccountBookUWP
         {
             if ((AppBarButton)sender == AddButton)
             {
-                
+                // 부모 페이지에 접근한다.
+                var parent = Utility.instance.FindParent<MainPage>(this);
+                App.titleStack.Push("추가하기");
+                parent.SetTitle(App.titleStack.Peek());
+                parent.SetSelectedMenu(2);
+
+                Frame.Navigate(typeof(AddPage));
             }
             else if ((AppBarButton)sender == SelectModeButton)
             {
@@ -128,7 +141,14 @@ namespace PersonalAccountBookUWP
             }
             else if ((AppBarButton)sender == RemoveButton)
             {
+                List<HistoryListCell> removeList = new List<HistoryListCell>();
 
+                foreach (HistoryListCell cell in HistoryList.SelectedItems)
+                {
+                    removeList.Add(cell);
+                }
+
+                Utility.instance.MessageBoxOpen(removeList.First().HistoryId);
             }
             else if ((AppBarButton)sender == CancelButton)
             {
@@ -139,26 +159,6 @@ namespace PersonalAccountBookUWP
                 HistoryList.SelectionMode = ListViewSelectionMode.None;
             }
         }
-
-        private void SelectModeButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (HistoryList.SelectionMode == ListViewSelectionMode.None)
-            {
-                HistoryList.SelectionMode = ListViewSelectionMode.Multiple;
-            }
-            else
-            {
-                HistoryList.SelectionMode = ListViewSelectionMode.None;
-            }
-        }
-
-        private void HistoryList_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            // titleStack에 Push해도 상위 Page인 MainPage는 바뀌지 않는다.
-            App.titleStack.Push("히스토리 자세히 보기");
-            this.Frame.Navigate(typeof(HistoryViewPage), e.ClickedItem as HistoryListCell);
-        }
-
 
         private List<HistoryListCell> getHistories(bool option, Dictionary<string, string> perRequestDic)
         {
@@ -218,7 +218,5 @@ namespace PersonalAccountBookUWP
 
             return list;
         }
-
-
     }
 }

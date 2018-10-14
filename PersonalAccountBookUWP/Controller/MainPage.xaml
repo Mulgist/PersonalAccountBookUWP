@@ -69,10 +69,10 @@
                                 </StackPanel>
                             </ListBoxItem>
 
-                            <ListBoxItem Name="SeminarListBoxItem" Height="48px">
+                            <ListBoxItem Name="AccountManageListBoxItem" Height="48px">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE836;" Foreground="White" />
-                                    <TextBlock Text="메뉴3" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE147;" Foreground="White" />
+                                    <TextBlock Text="계좌관리" FontSize="20" Margin="20,0,0,0" Foreground="White" />
                                 </StackPanel>
                             </ListBoxItem>
 

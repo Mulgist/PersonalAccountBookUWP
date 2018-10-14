@@ -103,20 +103,14 @@ namespace PersonalAccountBookUWP
                 (MainSplitView.Content as Frame).Navigate(typeof(AddPage));
                 return;
             }
-            /*
-            if (SeminarListBoxItem.IsSelected)
+            if (AccountManageListBoxItem.IsSelected)
             {
-                App.titleStack.Push("세미나");
+                App.titleStack.Push("계좌관리");
                 Title.Text = App.titleStack.Peek();
-                if (App.currentUserInfo.currentUserLevel == "미승인")
-                {
-                    MessageBoxOpen("권한이 없습니다.");
-                    (MainSplitView.Content as Frame).Navigate(typeof(BlankPage));
-                }
-                else
-                    (MainSplitView.Content as Frame).Navigate(typeof(DocumentsListPage), "173");
+                (MainSplitView.Content as Frame).Navigate(typeof(AccountManagePage));
                 return;
             }
+            /*
             if (PlayListBoxItem.IsSelected)
             {
                 App.titleStack.Push("플레이스토밍");
@@ -204,6 +198,33 @@ namespace PersonalAccountBookUWP
             Title.Text = App.titleStack.Peek();
             (MainSplitView.Content as Frame).Navigate(typeof(SettingPage));
             */
+        }
+
+        // 자식 페이지에서 실행하기 위한 함수들
+        public void SetTitle(string text)
+        {
+            Title.Text = text;
+        }
+
+        public void SetSelectedMenu(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    HomeListBoxItem.IsSelected = true;
+                    break;
+                case 1:
+                    HistoryListBoxItem.IsSelected = true;
+                    break;
+                case 2:
+                    AddBoxItem.IsSelected = true;
+                    break;
+                case 3:
+                    AccountManageListBoxItem.IsSelected = true;
+                    break;
+            }
+
+            
         }
     }
 }
