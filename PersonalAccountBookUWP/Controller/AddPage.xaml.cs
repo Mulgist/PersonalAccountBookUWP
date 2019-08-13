@@ -11,7 +11,9 @@ using Windows.Storage.Streams;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 
-namespace PersonalAccountBookUWP.Controller
+// 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
+
+namespace PersonalAccountBookUWP
 {
     public sealed partial class AddPage : Page
     {
@@ -217,7 +219,7 @@ namespace PersonalAccountBookUWP.Controller
 
             // 내용 검증 통과 완료. 내용을 서버로 업로드한다.
             // 업로드하기 전에 ID를 정한다. 거래날짜의 내역을 뒤져 그날 최근에 만들어진 내역을 찾아 새로운 ID를 만든다.
-            
+
             // ex. "2018-02-11 오전 12:00:00 +09:00"
             var date = TransactionDatePicker.Date.ToString();
             var blankIndex = date.IndexOf(' ');
@@ -231,7 +233,7 @@ namespace PersonalAccountBookUWP.Controller
             requestDic.Add((string)App.MethodElement.Element("do"), (string)App.MethodElement.Element("findRecentHistoryId"));
             requestDic.Add((string)App.MethodElement.Element("day"), date);
             objects = DataService.instance.GetJsonArrayFromDB(requestDic);
-            
+
             if (objects.Count != 0)
             {
                 foreach (JObject element in objects)
@@ -245,7 +247,7 @@ namespace PersonalAccountBookUWP.Controller
             var day = date.Substring(8, 2);
             var newId = year + month + day + "_" + string.Format("{0:D2}", ++getIdNumber);
             var plusOrMinus = "";
-            
+
             if (!transactionTypelist[TransactionTypeComboBox.SelectedIndex].IsEarn)
             {
                 plusOrMinus = "-";
