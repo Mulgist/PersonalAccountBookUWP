@@ -1,33 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Foundation.Metadata;
+using Windows.UI;
+using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Core;
-using System.Diagnostics;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using PersonalAccountBookUWP.Controller;
-using Windows.UI.Popups;
-using Windows.Foundation.Metadata;
-using Windows.UI;
-using Windows.UI.ViewManagement;
-using Windows.ApplicationModel.Core;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x412에 나와 있습니다.
 
 namespace PersonalAccountBookUWP
 {
-    /// <summary>
-    /// 자체적으로 사용하거나 프레임 내에서 탐색할 수 있는 빈 페이지입니다.
-    /// </summary>
     public sealed partial class MainPage : Page
     {
         public MainPage()
@@ -38,7 +33,8 @@ namespace PersonalAccountBookUWP
             // 뒤로가기 버튼 추가 (Desktop에서만)
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
 
-            // Mobile에서 Status Bar 색 변경
+            // Mobile에서 Status Bar 색 변경 (현재 사용 안함)
+            
             if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
                 var statusBar = StatusBar.GetForCurrentView();
@@ -50,7 +46,7 @@ namespace PersonalAccountBookUWP
                     statusBar.ForegroundColor = Colors.Black;
                 }
             }
-
+            
             App.titleStack.Push("홈");
             MainSplitViewContent.Navigate(typeof(HomePage));
             HomeListBoxItem.IsSelected = false;
@@ -224,7 +220,7 @@ namespace PersonalAccountBookUWP
                     break;
             }
 
-            
+
         }
     }
 }

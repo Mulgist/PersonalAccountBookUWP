@@ -5,7 +5,7 @@
 
     런타임 지시문은 https://go.microsoft.com/fwlink/?LinkID=391919에 설명되어 있습니다.
 
-    App1.MyClass 및 해당 모든 공개/개인 멤버에 대한 리플렉션을 완전히 활성화하려는 경우
+    App1.MyClass 및 해당 모든 퍼블릭/프라이빗 멤버에 대한 리플렉션을 완전히 활성화하려는 경우
     <Type Name="App1.MyClass" Dynamic="Required All"/>
 
     System.Int32에 대해 AppClass<T>의 특정 인스턴스화를 동적으로 생성할 수 있도록 하려는 경우
@@ -19,12 +19,12 @@
   <Application>
     <!--
       이름이 "*Application*"인 어셈블리 요소가 
-      응용 프로그램 패키지의 모든 어셈블리에 적용됩니다. 별표는 와일드카드가 아닙니다.
+      애플리케이션 패키지의 모든 어셈블리에 적용됩니다. 별표는 와일드카드가 아닙니다.
     -->
     <Assembly Name="*Application*" Dynamic="Required All" />
     
     
-    <!-- 여기에 응용 프로그램별 런타임 지시문을 추가하세요.-->
+    <!-- 여기에 애플리케이션별 런타임 지시문을 추가하세요. -->
 
 
   </Application>

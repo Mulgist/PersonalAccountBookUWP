@@ -26,7 +26,8 @@ namespace PersonalAccountBookUWP
 
         // 나중에 DB에 다방면으로 접근할 때 사용된다.
         private static XElement methodElement;
-        public static XElement MethodElement {
+        public static XElement MethodElement
+        {
             get => methodElement;
         }
 
@@ -79,7 +80,7 @@ namespace PersonalAccountBookUWP
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
-                    //TODO: 이전에 일시 중지된 응용 프로그램에서 상태를 로드합니다.
+                    //TODO: 이전에 일시 중지된 애플리케이션에서 상태를 로드합니다.
                 }
 
                 // 현재 창에 프레임 넣기
@@ -109,7 +110,7 @@ namespace PersonalAccountBookUWP
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: 응용 프로그램 상태를 저장하고 백그라운드 작업을 모두 중지합니다.
+            //TODO: 애플리케이션 상태를 저장하고 백그라운드 작업을 모두 중지합니다.
             deferral.Complete();
         }
     }
