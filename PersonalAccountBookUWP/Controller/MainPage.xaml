@@ -6,14 +6,15 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource SystemChromeLowColor}">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource SystemChromeLowColor}">
         <Grid.RowDefinitions>
             <RowDefinition Height="48" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Background="#FFF2F2F2">
+        <Grid Grid.Row="0"
+              Background="{ThemeResource SystemChromeLowColor}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="48" />
                 <ColumnDefinition Width="*" />
@@ -25,8 +26,8 @@
                     FontWeight="Bold"
                     Width="48px" 
                     Height="48px" 
-                    Foreground="White"
-                    Background="Green" 
+                    Foreground="{ThemeResource SystemChromeAltLowColor}"
+                    Background="{ThemeResource SystemListAccentHighColor}" 
                     Click="HambergerButton_Click" />
             <Border  BorderBrush="{x:Null}"
                      Grid.Column="1"
@@ -41,74 +42,80 @@
                            Margin="24,0,0,0" />
             </Border>
         </Grid>
-        <SplitView Name="MainSplitView" Grid.Row="1" DisplayMode="CompactOverlay" IsPaneOpen="False">
+        <SplitView Name="MainSplitView"
+                   Grid.Row="1"
+                   DisplayMode="CompactOverlay"
+                   IsPaneOpen="False"
+                   Background="{ThemeResource SystemChromeLowColor}">
             <SplitView.Pane>
                 <Grid>
-                    <StackPanel Background="#CC000000">
+                    <StackPanel Background="{ThemeResource SystemChromeLowColor}">
                         <ListBox Name="IconsListBox"
                                  SelectionMode="Single"
                                  SelectionChanged="HambergerListBox_SelectionChanged"
-                                 Background="Transparent">
+                                 Background="Transparent" 
+                                 Foreground="{ThemeResource SystemChromeAltLowColor}">
+                            
                             <ListBoxItem Name="HomeListBoxItem" Height="48px">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE10F;" Foreground="White" />
-                                    <TextBlock Text="홈" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE10F;" />
+                                    <TextBlock Text="홈" FontSize="20" Margin="20,0,0,0" />
                                 </StackPanel>
                             </ListBoxItem>
 
                             <ListBoxItem Name="HistoryListBoxItem" Height="48px">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xECC5;" Foreground="White" />
-                                    <TextBlock Text="히스토리" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xECC5;" />
+                                    <TextBlock Text="히스토리" FontSize="20" Margin="20,0,0,0" />
                                 </StackPanel>
                             </ListBoxItem>
 
                             <ListBoxItem Name="AddBoxItem" Height="48px">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE109;" Foreground="White"/>
-                                    <TextBlock Text="추가하기" FontSize="20" Margin="20,0,0,0" Foreground="White"/>
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE109;" />
+                                    <TextBlock Text="추가하기" FontSize="20" Margin="20,0,0,0" />
                                 </StackPanel>
                             </ListBoxItem>
 
                             <ListBoxItem Name="AccountManageListBoxItem" Height="48px">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE147;" Foreground="White" />
-                                    <TextBlock Text="계좌관리" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE147;" />
+                                    <TextBlock Text="계좌관리" FontSize="20" Margin="20,0,0,0" />
                                 </StackPanel>
                             </ListBoxItem>
 
                             <ListBoxItem Name="PlayListBoxItem" Height="48px">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE8FA;" Foreground="White" />
-                                    <TextBlock Text="메뉴4" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE8FA;" />
+                                    <TextBlock Text="메뉴4" FontSize="20" Margin="20,0,0,0" />
                                 </StackPanel>
                             </ListBoxItem>
 
                             <ListBoxItem Name="WorkshopListBoxItem" Height="48px">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE8E0;" Foreground="White" />
-                                    <TextBlock Text="메뉴5" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE8E0;" />
+                                    <TextBlock Text="메뉴5" FontSize="20" Margin="20,0,0,0" />
                                 </StackPanel>
                             </ListBoxItem>
 
                             <ListBoxItem Name="StudyListBoxItem" Height="48px">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE1C2;" Foreground="White" />
-                                    <TextBlock Text="메뉴6" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" Text="&#xE1C2;" />
+                                    <TextBlock Text="메뉴6" FontSize="20" Margin="20,0,0,0" />
                                 </StackPanel>
                             </ListBoxItem>
 
                             <ListBoxItem Name="StudentListBoxItem" Height="48px">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontSize="20" Text="在" Foreground="White" />
-                                    <TextBlock Text="메뉴7" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                    <TextBlock FontSize="20" Text="在" />
+                                    <TextBlock Text="메뉴7" FontSize="20" Margin="20,0,0,0" />
                                 </StackPanel>
                             </ListBoxItem>
 
                             <ListBoxItem Name="GraduateListBoxItem" Height="48px">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontSize="20" Text="卒" Foreground="White" />
-                                    <TextBlock Text="메뉴8" FontSize="20" Margin="20,0,0,0" Foreground="White" />
+                                    <TextBlock FontSize="20" Text="卒" />
+                                    <TextBlock Text="메뉴8" FontSize="20" Margin="20,0,0,0" />
                                 </StackPanel>
                             </ListBoxItem>
                         </ListBox>
@@ -124,14 +131,14 @@
                             </Grid.ColumnDefinitions>
                             <Border BorderBrush="{x:Null}" 
                                     Height="48px" 
-                                    Width="48px">
+                                    Width="48px" >
                                 <TextBlock TextWrapping="Wrap"
                                            FontFamily="Segoe MDL2 Assets" 
                                            FontSize="24" 
                                            Text="&#xE0AB;"
                                            VerticalAlignment="Center"
                                            HorizontalAlignment="Center"
-                                           Foreground="White" />
+                                           Foreground="{ThemeResource SystemChromeAltLowColor}" />
                             </Border>
                             <Button Grid.Column="3" 
                                     FontFamily="Segoe MDL2 Assets" 
@@ -140,7 +147,7 @@
                                     Background="Transparent" 
                                     Height="48px"
                                     Width="48px"
-                                    Foreground="White"
+                                    Foreground="{ThemeResource SystemChromeAltLowColor}"
                                     Click="AccountButton_Click"
                                     ToolTipService.ToolTip="계정"/>
                             <Button Grid.Column="4" 
@@ -150,7 +157,7 @@
                                     Background="Transparent" 
                                     Height="48px"
                                     Width="48px"
-                                    Foreground="White"
+                                    Foreground="{ThemeResource SystemChromeAltLowColor}"
                                     Click="SettingButton_Click"
                                     ToolTipService.ToolTip="설정"/>
                         </Grid>
@@ -158,7 +165,8 @@
                 </Grid>
             </SplitView.Pane>
             <SplitView.Content>
-                <Frame Name="MainSplitViewContent" />
+                <Frame Name="MainSplitViewContent"
+                       Background="{ThemeResource SystemChromeLowColor}" />
             </SplitView.Content>
         </SplitView>
     </Grid>

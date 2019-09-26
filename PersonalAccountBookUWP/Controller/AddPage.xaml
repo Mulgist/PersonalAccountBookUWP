@@ -6,9 +6,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource SystemBaseMediumColor}">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource SystemBaseMediumColor}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -188,7 +188,7 @@
             </StackPanel>
         </ScrollViewer>
 
-        <CommandBar Grid.Row="1">
+        <CommandBar Grid.Row="1" Background="{ThemeResource SystemBaseMediumColor}">
             <AppBarButton Name="EraseButton"
                           Label="지우기"
                           Click="EraseButton_Click">
