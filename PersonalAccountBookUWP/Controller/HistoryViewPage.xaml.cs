@@ -61,10 +61,10 @@ namespace PersonalAccountBookUWP
 
             // 비동기 처리 필요없었음..
             buffer = DataService.instance.DownloadImageBuffer(history.HistoryId);
-            BitmapImage image = Utility.instance.BufferToImageAsync(buffer).Result;
 
-            if (image != null)
+            if (buffer != null)
             {
+                BitmapImage image = Utility.instance.BufferToImageAsync(buffer).Result;
                 ReceiptImage.Source = image;
             }
             else

@@ -6,9 +6,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource SystemBaseMediumColor}">
+    Background="{ThemeResource SystemChromeMediumColor}">
 
-    <Grid Background="{ThemeResource SystemBaseMediumColor}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -27,7 +27,10 @@
                                 Name="TransactionDatePicker" 
                                 HorizontalAlignment="Stretch"
                                 Header="날짜"
-                                Margin="10,10,10,10" />
+                                Background="{ThemeResource SystemChromeLowColor}"
+                                Margin="10,10,10,10">
+                        
+                    </CalendarDatePicker>
                     <CheckBox Grid.Column="1"
                               Name="TodayCheckBox"
                               Content="오늘"
@@ -49,19 +52,21 @@
                         PlaceholderText="계좌 선택"
                         Margin="10,10,10,10"
                         HorizontalAlignment="Stretch"
-                        SelectionChanged="AccountChooseBox_SelectionChanged" />
+                        Background="{ThemeResource SystemChromeLowColor}"
+                        SelectionChanged="AccountChooseBox_SelectionChanged" >
+
+                    </ComboBox>
                     <TextBlock Grid.Column="1"
                                Name="BeforeBalanceTextBlock"
                                Text="계산 전 잔액"
-                               Margin="10,45,10,10" />
+                               Margin="10,40,10,20" />
                 </Grid>
 
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="25*" />
-                        <ColumnDefinition Width="25*" />
                         <ColumnDefinition Width="45*" />
-                        <ColumnDefinition Width="5*" />
+                        <ColumnDefinition Width="30*" />
                     </Grid.ColumnDefinitions>
                     <ToggleSwitch Grid.Column="0"
                                   Name="IncOrDecToggleSwitch"
@@ -70,18 +75,18 @@
                                   OffContent=" -"
                                   HorizontalAlignment="Left"
                                   Toggled="IncOrDecToggleSwitch_Toggled"
-                                  Margin="10,10,10,10"/>
-                    <ComboBox Grid.Column="1"
-                              Name="CurrencyComboBox"
-                              Header="통화"
-                              Margin="10,10,10,10"
-                              HorizontalAlignment="Stretch" />
-                    <TextBox Grid.Column="2"
+                                  Foreground="#DD000000"
+                                  
+                                  Margin="10,10,10,10">
+
+                    </ToggleSwitch>
+                    <TextBox Grid.Column="1"
                              Name="AmountTextBox"
                              Header="거래 금액"
                              PlaceholderText="금액 입력 (숫자만)"
                              LostFocus="AmountTextBox_LostFocus"
                              Margin="10,10,10,10"
+                             Background="{ThemeResource SystemChromeLowColor}"
                              HorizontalAlignment="Stretch"/>
                 </Grid>
 
@@ -98,6 +103,7 @@
                               Header="거래 유형"
                               PlaceholderText="거래 유형 선택"
                               Margin="10,10,10,10"
+                              Background="{ThemeResource SystemChromeLowColor}"
                               HorizontalAlignment="Stretch"/>
                 </Grid>
 
@@ -119,6 +125,7 @@
                                     Margin="10,10,10,10"
                                     TextChanged="BankBookSuggestBox_TextChanged"
                                     SuggestionChosen="BankBookSuggestBox_SuggestionChosen"
+                                    Background="{ThemeResource SystemChromeLowColor}"
                                     HorizontalAlignment="Stretch"/>
                     <!-- " TextBox Grid.Row="1" Grid.Column="0" Name="CardBookTextBox" Header="자세한 거래 대상" PlaceholderText="(옵션) 카드내역에 있는 거래 대상 입력" Margin="10,10,10,10" IsSpellCheckEnabled="True" HorizontalAlignment="Stretch"/-->
                     <AutoSuggestBox Grid.Row="1"
@@ -129,6 +136,7 @@
                                     Margin="10,10,10,10"
                                     TextChanged="CardBookSuggestBox_TextChanged"
                                     SuggestionChosen="CardBookSuggestBox_SuggestionChosen"
+                                    Background="{ThemeResource SystemChromeLowColor}"
                                     HorizontalAlignment="Stretch"/>
                 </Grid>
                 <StackPanel Name="ImageStackPanel"
@@ -138,7 +146,7 @@
                             Width="100" Height="150"
                             Click="ReceiptImageButton_ClickAsync"
                             Padding="0, 0, 0, 0"
-                            Background="White">
+                            Background="{ThemeResource SystemChromeLowColor}">
                         <Button.Content>
                             <Image Name="ReceiptImage"
                                    Source="ms-appx:///Assets/AddImage.png"
@@ -175,10 +183,12 @@
                     <Button Grid.Column="2"
                             Name="AddDetailButton"
                             Content="추가"
+                            Background="{ThemeResource SystemChromeLowColor}"
                             Click="AddDetailButton_Click"/>
                     <Button Grid.Column="4"
                             Name="RemoveDetailButton"
                             Content="제거"
+                            Background="{ThemeResource SystemChromeLowColor}"
                             Click="RemoveDetailButton_Click"/>
                     <TextBlock Grid.Column="6"
                                Name="AmountTextBlock"
@@ -188,7 +198,7 @@
             </StackPanel>
         </ScrollViewer>
 
-        <CommandBar Grid.Row="1" Background="{ThemeResource SystemBaseMediumColor}">
+        <CommandBar Grid.Row="1">
             <AppBarButton Name="EraseButton"
                           Label="지우기"
                           Click="EraseButton_Click">

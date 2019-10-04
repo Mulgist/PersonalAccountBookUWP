@@ -469,7 +469,6 @@ namespace PersonalAccountBookUWP
         {
             // ComboBox의 항목 추가
             var accountStringList = new List<string>();
-            var currencyList = new List<string>();
 
             TransactionDatePicker.Date = Convert.ToDateTime(Convert.ToString(App.localSettings.Values["date"]));
 
@@ -500,16 +499,6 @@ namespace PersonalAccountBookUWP
 
             // Default Selection
             IncOrDecToggleSwitch.IsOn = Convert.ToBoolean(App.localSettings.Values["inOrDec"]);
-
-            // -------------------------------------------------------------------------
-
-            currencyList.Add("\\");
-            // currencyList.Add("$");
-            // currencyList.Add("€");
-            // currencyList.Add("£");
-            // currencyList.Add("¥");
-            CurrencyComboBox.ItemsSource = currencyList;
-            CurrencyComboBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["currencyIndex"]);
 
             // -------------------------------------------------------------------------
 
@@ -589,7 +578,6 @@ namespace PersonalAccountBookUWP
             AccountChooseBox.SelectionChanged += AccountChooseBox_SelectionChanged;
             AccountChooseBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["accountIndex"]);
             IncOrDecToggleSwitch.IsOn = Convert.ToBoolean(App.localSettings.Values["inOrDec"]);
-            CurrencyComboBox.SelectedIndex = Convert.ToInt32(App.localSettings.Values["currencyIndex"]);
             AmountTextBox.Text = "";
             LoadBalance();
             SetTransactionTypeComboBox(IncOrDecToggleSwitch.IsOn);
@@ -627,7 +615,6 @@ namespace PersonalAccountBookUWP
             App.localSettings.Values["date"] = TransactionDatePicker.Date.ToString();
             App.localSettings.Values["inOrDec"] = IncOrDecToggleSwitch.IsOn;
             App.localSettings.Values["accountIndex"] = AccountChooseBox.SelectedIndex;
-            App.localSettings.Values["currencyIndex"] = CurrencyComboBox.SelectedIndex;
             if (IncOrDecToggleSwitch.IsOn) { App.localSettings.Values["plusTtypeIndex"] = TransactionTypeComboBox.SelectedIndex; }
             else { App.localSettings.Values["minusTypeIndex"] = TransactionTypeComboBox.SelectedIndex; }
         }

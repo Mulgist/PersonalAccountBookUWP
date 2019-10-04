@@ -54,8 +54,6 @@ namespace PersonalAccountBookUWP
                 localSettings.Values["inOrDec"] = true;
             if (localSettings.Values["accountIndex"] == null)
                 localSettings.Values["accountIndex"] = 0;
-            if (localSettings.Values["currencyIndex"] == null)
-                localSettings.Values["currencyIndex"] = 0;
             if (localSettings.Values["plusTypeIndex"] == null)
                 localSettings.Values["plusTtypeIndex"] = 0;
             if (localSettings.Values["minusTypeIndex"] == null)

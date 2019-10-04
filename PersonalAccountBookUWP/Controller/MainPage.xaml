@@ -5,10 +5,9 @@
     xmlns:local="using:PersonalAccountBookUWP"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource SystemChromeLowColor}">
+    mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource SystemChromeLowColor}">
+    <Grid >
         <Grid.RowDefinitions>
             <RowDefinition Height="48" />
             <RowDefinition Height="*" />
@@ -166,7 +165,7 @@
             </SplitView.Pane>
             <SplitView.Content>
                 <Frame Name="MainSplitViewContent"
-                       Background="{ThemeResource SystemChromeLowColor}" />
+                       Background="{ThemeResource SystemChromeMediumColor}" />
             </SplitView.Content>
         </SplitView>
     </Grid>
